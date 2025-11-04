@@ -14,11 +14,10 @@ Install dependencies
 ```
 pip install -r requirements.txt
 ```
-Create a `.env` file with your environment variables.
+Create a `.env` file in the root directory with your environment variables.
 ```
 FLASK_APP=backend.app:create_app
 FLASK_ENV=development
-flask run
 ```
 
 ## Frontend Setup
@@ -29,7 +28,7 @@ npm install
 ```
 
 ## Access the App
-After setting up the backend and frontend, install `concurrently` and run `npm run app` to start both parts together.
+After setting up the backend and frontend, go to the root directory and install `concurrently` then run `npm run app` to start both parts together.
 ```
 npm install -g concurrently
 npm run app

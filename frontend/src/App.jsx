@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import { fetchHello, fetchTime } from './services/api';
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -11,6 +9,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   const [currentTime, setCurrentTime] = useState(new Date());
+
 
   useEffect(() => {
     fetchTime().then(res => res.json()).then(data => {

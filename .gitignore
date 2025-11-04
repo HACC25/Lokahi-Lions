@@ -2,6 +2,8 @@
 backend/venv/
 backend/__pycache__/
 backend/.env
+backend/instance/
+instance/
 
 # Frontend
 frontend/node_modules/

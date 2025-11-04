@@ -1,7 +1,7 @@
 Project Description
 
 # Installation
-Clone the repository and navigate to its directory. 
+Ensure you have Python v3.11.9 or higher installed. Clone the repository and navigate to its directory. 
 
 ## Backend Setup
 Navigate into the `backend` directory. Create and activate a virtual environment.
@@ -16,8 +16,9 @@ pip install -r requirements.txt
 ```
 Create a `.env` file with your environment variables.
 ```
-FLASK_APP=app.py
+FLASK_APP=backend.app:create_app
 FLASK_ENV=development
+flask run
 ```
 
 ## Frontend Setup
@@ -35,9 +36,8 @@ npm run app
 ```
 
 You can also run each part individually if you prefer.
-*To test the backend independent from the frontend, navigate to the `backend` directory and run the Flask server (defaults at http://localhost:5000)*
+*To test the backend independent from the frontend, run the Flask server (defaults at http://localhost:5000)*
 ```
-cd backend
 flask run   # Alternatively: venv\Scripts\flask run
 ```
 *To test the frontend independent from the backend, navigate to the `frontend` directory and run the Vite server (defaults at http://localhost:5173)*

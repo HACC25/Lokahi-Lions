@@ -18,6 +18,7 @@ Create a `.env` file in the root directory with your environment variables.
 ```
 FLASK_APP=backend.app:create_app
 FLASK_ENV=development
+REACT_APP_API_URL=http://localhost:5173
 ```
 
 ## Frontend Setup

@@ -1,7 +1,7 @@
 Project Description
 
 # Installation
-Ensure you have Python v3.11.9 or higher installed. Clone the repository and navigate to its directory. 
+Ensure you have Python v3.11.9 or higher installed. You will need a working Gemini API key. Clone the repository and navigate to its directory. 
 
 ## Backend Setup
 Navigate into the `backend` directory. Create and activate a virtual environment.
@@ -19,6 +19,7 @@ Create a `.env` file in the root directory with your environment variables.
 FLASK_APP=backend.app:create_app
 FLASK_ENV=development
 REACT_APP_API_URL=http://localhost:5173
+GEMINI_API_KEY=your_actual_api_key_here
 ```
 
 ## Frontend Setup

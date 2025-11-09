@@ -2,6 +2,8 @@ from backend.database import db
 
 # Define model of a user Profile
 class Profile(db.Model):
+    __bind_key__ = 'profiles'
+    __tablename__ = 'profiles'
     email = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(100), nullable=False)
     # Add other fields as necessary

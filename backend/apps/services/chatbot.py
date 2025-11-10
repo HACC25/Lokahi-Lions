@@ -195,9 +195,9 @@ if __name__ == "__main__":
     parser.add_argument("--question", "-q", required=False, default="Give me course recommendations for a student interested in programming.", help="Question to ask the chatbot")
     parser.add_argument("--school", "-s", required=False, help="Optional school key (e.g. manoa, kapiolani)")
     parser.add_argument("--data-dir", required=False, help="Optional path to models/course-data folder")
-    parser.add_argument("--allow-no-api", action="store_true", help="Allow running without GEMINI_API_KEY (prints prompt instead of calling API)")
+    #parser.add_argument("--allow-no-api", action="store_true", help="Allow running without GEMINI_API_KEY (prints prompt instead of calling API)")
     args = parser.parse_args()
 
-    cb = ChatBot(load_data=True, data_dir=args.data_dir, allow_no_api=args.allow_no_api)
+    cb = ChatBot(load_data=True, data_dir=args.data_dir)
     out = cb.ask_course_question(args.question, school=args.school)
     print(out)

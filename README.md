@@ -20,6 +20,7 @@ FLASK_APP=backend.app:create_app
 FLASK_ENV=development
 REACT_APP_API_URL=http://localhost:5173
 GEMINI_API_KEY=your_actual_api_key_here
+DATABASE_URL=your_postgres_database_url_here
 ```
 Databases are automatically created and populated when run and are located in the `instance` directory. 
 

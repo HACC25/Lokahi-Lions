@@ -1,22 +1,29 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from backend.database import db
-from backend.populate_db import populate
 from backend.apps.routes.api_routes import api_bp
-from backend.models.course import Course
-from backend.models.profile import Profile
+
+load_dotenv()
 
 def create_app():
     app = Flask(__name__)
 
-    # Configuration for database of users
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///default.db"
-    app.config['SQLALCHEMY_BINDS'] = {
-        'profiles' : 'sqlite:///profiles.db',
-        'courses' : 'sqlite:///courses.db'
-    }
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise SystemExit("DATABASE_URL not found. Set it in your environment or .env file.")
+
+    # Configuration for database
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Optional engine options to avoid too many connections
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_size": int(os.getenv("DB_POOL_SIZE", 5)),
+        "max_overflow": int(os.getenv("DB_MAX_OVERFLOW", 10)),
+    }
 
     db.init_app(app)
 
@@ -24,12 +31,6 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://localhost:5000", "http://127.0.0.1:5000", "http://127.0.0.1:5173"]}})
     with app.app_context():
         db.create_all()
-        db.create_all(bind_key=['profiles', 'courses'])  # Create database tables
-        populate()  # Populate the database with initial data
-        print("- Database tables created and populated. -")
-        test_select = db.session.scalars(db.select(Course).where(Course.course_prefix == "ICS", Course.course_number == "311")).first()
-        print("Test select result:", test_select)
-
 
     return app
 

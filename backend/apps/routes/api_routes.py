@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from backend.models.profile import Profile
 from backend.database import db
 import time
 
@@ -19,6 +18,7 @@ def get_current_time():
 def signup():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
+    '''
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -34,12 +34,14 @@ def signup():
         print(f"ERROR: {e}")
         db.session.rollback()
         return jsonify({"message": "Error creating user"}), 500
+    '''
 
 # User login route
 @api_bp.route('/login', methods=['POST'])
 def login():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
+    '''
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -47,3 +49,4 @@ def login():
     if profile and profile.password == password:
         return jsonify({"message": "Login successful"}), 200
     return jsonify({"message": "Invalid credentials"}), 401
+    '''

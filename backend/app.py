@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from sqlalchemy import text
 from flask_sqlalchemy import SQLAlchemy
 from backend.database import db
 from backend.apps.routes.api_routes import api_bp
@@ -35,7 +36,7 @@ def create_app():
     @app.route("/_db_check")
     def db_check():
         try:
-            db.session.execute("SELECT 1").scalar()
+            db.session.execute(text("SELECT 1")).scalar()
             return {"ok": True}, 200
         except Exception as e:
             import traceback

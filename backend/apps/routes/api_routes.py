@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from database import db
+from backend.database import db
 import time
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')

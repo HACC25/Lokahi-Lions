@@ -11,6 +11,14 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
 
+    @app.route("/_db_check")
+    def db_check():
+        try:
+            db.session.execute("SELECT 1").scalar()
+            return {"ok": True}, 200
+        except Exception as e:
+            return {"ok": False, "error": str(e)}, 500
+
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
         raise SystemExit("DATABASE_URL not found. Set it in your environment or .env file.")

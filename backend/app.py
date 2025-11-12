@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from backend.database import db
-from backend.apps.routes.api_routes import api_bp
+from database import db
+from apps.routes.api_routes import api_bp
 
 load_dotenv()
 

@@ -5,5 +5,12 @@
     "backend": "python -m flask run",
     "frontend": "cd frontend && npm run dev",
     "app": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "dependencies": {
+    "lucide-react": "^0.553.0",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.3"
   }
 }

@@ -1,52 +1,77 @@
 from flask import Blueprint, request, jsonify
-from backend.database import db
+from dotenv import load_dotenv
+from supabase import create_client, Client
+import os
 import time
 
-api_bp = Blueprint('api', __name__, url_prefix='/api')
+# Load environment variables from .env
+load_dotenv()
 
-# Example route to test API
-@api_bp.route('/hello')
-def hello():
-    return jsonify({"message": "API test!"})
+# Fetch variables
+USER = os.getenv("user")
+PASSWORD = os.getenv("password")
+HOST = os.getenv("host")
+PORT = os.getenv("port")
+DBNAME = os.getenv("dbname")
 
-@api_bp.route('/time')
-def get_current_time():
-    return {"time": time.time()}
+# Connect to supabase database
+DATABASE_URL: str = os.getenv("DATABASE_URL")
+#DATABASE_URL = f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}"
+
+# Publishable supabase key
+SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(DATABASE_URL, SUPABASE_KEY)
+
+api_bp = Blueprint('api', __name__, url_prefix='/api')  
 
 # User signup route
 @api_bp.route('/signup', methods=['POST'])
 def signup():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
-    '''
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    if Profile.query.filter_by(email=email).first():
-        return jsonify({"message": "Email already exists"}), 400
-    # TODO Hash password before storing
-    new_profile = Profile(email=email, password=password)
-    try:
-        db.session.add(new_profile)
-        db.session.commit()
-        return jsonify({"message": "Signup successful"}), 201
-    except Exception as e:
-        print(f"ERROR: {e}")
-        db.session.rollback()
-        return jsonify({"message": "Error creating user"}), 500
-    '''
+
+    # Check if email in database already exists
+    response = (
+        supabase.table("profiles")
+        .select("email")
+        .is_("email", email)
+        .execute()
+    )
+    if response.data:
+        return jsonify({"message": "A profile with this email already exists"}), 400
+    
+    # TODO Hash password and insert new user into database
+    hashed_password = password 
+    response = (
+        supabase.table("profiles")
+        .insert({"email": email, "password": password, "student_status": "null", "attending_campus": "null"})
+        .execute()
+    )
+    return jsonify({"message": "User created successfully"}), 201
 
 # User login route
 @api_bp.route('/login', methods=['POST'])
 def login():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
-    '''
+    
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    profile = Profile.query.filter_by(email=email).first()
-    if profile and profile.password == password:
+    hashed_password = password
+
+    # Check database for user with matching email and password
+    response = (
+        supabase.table("profiles")
+        .select("email", "password")
+        .is_("email", email)
+        .is_("password", hashed_password)
+        .execute()
+    )
+    if response.data:
         return jsonify({"message": "Login successful"}), 200
     return jsonify({"message": "Invalid credentials"}), 401
-    '''
+    

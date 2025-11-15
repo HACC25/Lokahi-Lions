@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { signupUser } from "../services/api";
+import '../styles/input.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");

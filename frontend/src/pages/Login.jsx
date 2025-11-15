@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { loginUser } from "../services/api";
+import '../styles/input.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -9,7 +11,7 @@ export default function LoginForm() {
   async function handleLogin(e) {
     e.preventDefault();
     const result = await loginUser(email, password);
-    setMessage(result.message || "Login attempt finished.");
+    setMessage(result.message || "Wrong credentials.");
   }
 
   return (

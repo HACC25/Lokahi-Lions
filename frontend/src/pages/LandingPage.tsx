@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle } from 'lucide-react';
 
-export default function StudyAdvisorLanding() {
+export default function HomePage() {
+  const navigate = useNavigate();
   const [interests, setInterests] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [showResults, setShowResults] = useState(false);
@@ -9,6 +11,10 @@ export default function StudyAdvisorLanding() {
   const [email, setEmail] = useState('');
   const [scrollY, setScrollY] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -76,8 +82,8 @@ export default function StudyAdvisorLanding() {
             <Brain className="text-emerald-400" />
             <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">UH Pathfinder</span>
           </div>
-          <button className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105">
-            Sign In
+          <button type="submit" onClick={ handleLogin } className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105">
+            Log In
           </button>
         </div>
       </nav>

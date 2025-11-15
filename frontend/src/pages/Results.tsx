@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Brain, Sparkles, TrendingUp, DollarSign, BookOpen, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, Clock, Award, Briefcase, MapPin, Users, Target, Lightbulb } from 'lucide-react';
 
-export default function UHPathfinderAI() {
+export default function ResultsPathway() {
   const [selectedPath, setSelectedPath] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([

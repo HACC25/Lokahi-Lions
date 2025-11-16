@@ -1,15 +1,14 @@
 import { StrictMode } from 'react'
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './styles/input.css'
 import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { AuthProvider } from "./auth/AuthContext.tsx";
 import HomePage from './pages/LandingPage.tsx'
 import ResultsPathway from './pages/Results.tsx'
-import SignupForm from './pages/Signup.jsx'
-import LoginForm from './pages/Login.jsx'
+import SignupForm from './pages/Signup.tsx'
+import LoginForm from './pages/Login.tsx'
 
-const isLoggedIn: boolean = false;
-
+let isLoggedIn: boolean = false;
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
@@ -18,19 +17,21 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signup" element={<SignupForm />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/pathway" 
-          element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
-            <ResultsPathway />
-          </ProtectedRoute>
-          } 
-        />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signup" element={<SignupForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/pathway" 
+            element={
+            <ProtectedRoute>
+              <ResultsPathway />
+            </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 )

@@ -37,17 +37,18 @@ def signup():
     response = (
         supabase.table("profiles")
         .select("email")
-        .is_("email", email)
+        .eq("email", email)
+        .maybe_single()
         .execute()
     )
-    if response.data:
+    if response is not None and response.data is not None:
         return jsonify({"message": "A profile with this email already exists"}), 400
     
     # TODO Hash password and insert new user into database
     hashed_password = password 
     response = (
         supabase.table("profiles")
-        .insert({"email": email, "password": password, "student_status": "null", "attending_campus": "null"})
+        .insert({"email": email, "password": password, "student_status": "freshmen", "attending_campus": "manoa"})
         .execute()
     )
     return jsonify({"message": "User created successfully"}), 201
@@ -67,11 +68,12 @@ def login():
     response = (
         supabase.table("profiles")
         .select("email", "password")
-        .is_("email", email)
-        .is_("password", hashed_password)
+        .eq("email", email)
+        .eq("password", hashed_password)
+        .maybe_single()
         .execute()
     )
-    if response.data:
-        return jsonify({"message": "Login successful"}), 200
-    return jsonify({"message": "Invalid credentials"}), 401
+    if response is not None and response.data is not None:
+        return jsonify({"message": "Login successful", "loginAttempt": "success"}), 200
+    return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
     

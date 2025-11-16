@@ -7,9 +7,19 @@ instance/
 *.pyc
 
 # Frontend
+node_modules/
 frontend/node_modules/
 frontend/.env
+logs
+*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+dist
+dist-ssr
+*.local
 
 # Environment variables
 .env
@@ -18,3 +28,11 @@ npm-debug.log*
 .vscode/
 .idea/
 .vercel
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

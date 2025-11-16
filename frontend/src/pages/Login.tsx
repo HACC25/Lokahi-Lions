@@ -1,16 +1,26 @@
 import { useState } from "react";
-import { loginUser } from "../services/api";
+import '../styles/input.css';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  async function handleLogin(e) {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await loginUser(email, password);
-    setMessage(result.message || "Login attempt finished.");
-  }
+
+    // Redirect to pathway upon successful login
+    const success = await login(email, password);
+    if (success) {
+      navigate("/pathway", { replace: true })
+    } else {
+      setMessage("Invalid email or password");
+    }
+  };
 
   return (
     <div className="col-md-6 offset-md-3">

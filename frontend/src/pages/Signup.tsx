@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { signupUser } from "../services/api";
+import '../styles/input.css';
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const data = await signupUser(email, password);

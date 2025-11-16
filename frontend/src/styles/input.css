@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@layer components {
+	.btn-primary {
+		padding: 0.75rem 1.5rem;
+		border-radius: 1rem;
+		background: linear-gradient(to right, #059669, #0d9488);
+		color: #fff;
+		border: none;
+		cursor: pointer;
+	}
+
+	.card-panel {
+		background-color: rgba(255, 255, 255, 0.1);
+		backdrop-filter: blur(20px);
+		border-radius: 1.5rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.25rem 0.75rem;
+		border-radius: 9999px;
+		background-color: rgba(255, 255, 255, 0.1);
+		font-size: 0.875rem;
+	}
+
+	.input-rounded {
+		width: 100%;
+		padding: 0.75rem 1.5rem;
+		background-color: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 1rem;
+	}
+
+	.input-rounded:focus {
+		outline: none;
+		box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+	}
+}

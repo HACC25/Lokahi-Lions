@@ -1,14 +1,13 @@
 import os
 from dotenv import load_dotenv
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from supabase.client import create_client
-import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
@@ -16,18 +15,29 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
 
 # Initialize clients
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-embeddings = GoogleGenerativeAIEmbeddings(
-    model="models/gemini-embedding-001",
-    google_api_key=GEMINI_API_KEY,
-    task_type="retrieval_query"
+
+# Initialize embeddings client using LangChain's wrapper
+embeddings_client = GoogleGenerativeAIEmbeddings(
+    model="gemini-embedding-001",
+    google_api_key=GEMINI_API_KEY
 )
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-2.5-flash-lite')
+
+# Use ChatGoogleGenerativeAI for chat (better integration with LangChain)
+chat_model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite",
+    google_api_key=GEMINI_API_KEY,
+    temperature=0.5
+)
+# Conversation history storage
+conversation_history = []
 
 def search_courses(query: str, top_k: int = 5):
-    """Search for relevant courses using semantic similarity"""
-    # Generate embedding for the query with 1536 dimensions to match database
-    query_embedding = embeddings.embed_query(query, output_dimensionality=1536)
+    # Generate embedding for the query using LangChain's GoogleGenerativeAIEmbeddings
+    # This returns a list of floats matching the embedding stored in Supabase
+    query_embedding = embeddings_client.embed_query(
+        query,
+        output_dimensionality=1536
+    )
     
     # Perform similarity search in Supabase
     # Convert list to string format that Supabase expects
@@ -63,12 +73,36 @@ def format_context(courses):
     
     return "\n---\n".join(context_parts)
 
+def format_conversation_history():
+    """Format conversation history for context"""
+    if not conversation_history:
+        return ""
+    
+    history_text = "\n\nPREVIOUS CONVERSATION:\n"
+    for entry in conversation_history[-6:]:  # Keep last 3 exchanges (6 messages)
+        history_text += f"{entry['role'].upper()}: {entry['content']}\n"
+    
+    return history_text
+
 def chat(user_query: str):
-    """Main chatbot function"""
+    """Main chatbot function with conversation memory"""
     print(f"\n🔍 Searching for relevant courses...")
     
-    # Search for relevant courses
-    relevant_courses = search_courses(user_query, top_k=5)
+    # For follow-up questions, we might need context from history
+    # Create a query that includes recent context
+    enriched_query = user_query
+    if conversation_history:
+        # Get last user question and assistant response for context
+        recent_context = ""
+        for entry in conversation_history[-4:]:
+            if entry['role'] == 'user':
+                recent_context += f"Previous question: {entry['content'][:100]}... "
+        
+        if recent_context:
+            enriched_query = f"{recent_context} Current question: {user_query}"
+    
+    # Search for relevant courses using the enriched query
+    relevant_courses = search_courses(enriched_query, top_k=5)
     
     if not relevant_courses:
         return "I couldn't find any relevant courses in the database. Could you rephrase your question?"
@@ -76,31 +110,48 @@ def chat(user_query: str):
     # Format context
     context = format_context(relevant_courses)
     
-    # Create prompt for Gemini
+    # Get conversation history
+    history = format_conversation_history()
+    
+    # Create prompt for Gemini with conversation history
     prompt = f"""You are a helpful university course advisor assistant. A student has asked a question about courses.
-
-Based on the following course information from the University of Hawaii system, provide a helpful and accurate response.
-
-STUDENT QUESTION:
-{user_query}
-
-RELEVANT COURSES:
-{context}
-
-Please provide a clear, conversational response that:
-1. Directly answers the student's question
-2. References specific courses when relevant
-3. Includes course codes, titles, and schools
-4. Mentions credit hours if relevant
-5. Is friendly and encouraging
-
+    Based on the following course information from the University of Hawaii system and the previous conversation, provide a helpful and accurate response.
+    {history}
+    CURRENT STUDENT QUESTION:
+    {user_query}
+    RELEVANT COURSES:
+    {context}
+    Please provide a clear, conversational response that:
+    1. Directly answers the student's question
+    2. References specific courses when relevant
+    3. Includes course codes, titles, and schools
+    4. Mentions credit hours if relevant
+    5. Is friendly and encouraging
+    6. References previous parts of the conversation when relevant (e.g., "As I mentioned earlier..." or "Building on what we discussed...")
+    7. For follow-up questions like "what about...", "tell me more", or "any others?", use context from the conversation history
 Response:"""
     
-    # Generate response
+    # Generate response using LangChain's ChatGoogleGenerativeAI
     print("💭 Generating response...")
-    response = model.generate_content(prompt)
+    response = chat_model.invoke(prompt)
     
-    return response.text
+    # Store conversation in history
+    conversation_history.append({
+        'role': 'user',
+        'content': user_query
+    })
+    conversation_history.append({
+        'role': 'assistant',
+        'content': response.content
+    })
+    
+    return response.content
+
+def reset_conversation():
+    """Clear conversation history"""
+    global conversation_history
+    conversation_history = []
+    print("🔄 Conversation history cleared!")
 
 def main():
     """Interactive chat loop"""
@@ -108,7 +159,8 @@ def main():
     print("🌺 University of Hawaii Course Chatbot")
     print("=" * 60)
     print("Ask me anything about UH courses!")
-    print("Type 'quit' or 'exit' to end the conversation.\n")
+    print("Type 'quit' or 'exit' to end the conversation.")
+    print("Type 'reset' to clear conversation history.\n")
     
     while True:
         user_input = input("You: ").strip()
@@ -116,6 +168,10 @@ def main():
         if user_input.lower() in ['quit', 'exit', 'q']:
             print("\n👋 Aloha! Have a great day!")
             break
+        
+        if user_input.lower() == 'reset':
+            reset_conversation()
+            continue
         
         if not user_input:
             continue

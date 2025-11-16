@@ -13,11 +13,11 @@ DELAY_BETWEEN_BATCHES = 2  # seconds
 MAX_RETRIES = 3
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
-    raise ValueError("Make sure SUPABASE_URL, SUPABASE_SERVICE_KEY, and GEMINI_API_KEY are set in your .env")
+    raise ValueError("Make sure SUPABASE_URL, SUPABASE_KEY, and GEMINI_API_KEY are set in your .env")
 
 # Initialize Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)

@@ -27,6 +27,9 @@ api_bp = Blueprint('api', __name__, url_prefix='/api')
 # User signup route
 @api_bp.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
+    if request.method == "OPTIONS":
+        # Preflight request success response
+        return "", 200
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
     data = request.get_json()
@@ -56,6 +59,9 @@ def signup():
 # User login route
 @api_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
+    if request.method == "OPTIONS":
+        # Preflight request success response
+        return "", 200
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
     

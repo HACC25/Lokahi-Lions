@@ -25,7 +25,7 @@ supabase: Client = create_client(DATABASE_URL, SUPABASE_KEY)
 api_bp = Blueprint('api', __name__, url_prefix='/api')  
 
 # User signup route
-@api_bp.route('/signup', methods=['POST'])
+@api_bp.route('/signup', methods=['POST', 'OPTIONS'])
 def signup():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
@@ -54,7 +54,7 @@ def signup():
     return jsonify({"message": "User created successfully"}), 201
 
 # User login route
-@api_bp.route('/login', methods=['POST'])
+@api_bp.route('/login', methods=['POST', 'OPTIONS'])
 def login():
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400

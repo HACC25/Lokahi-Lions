@@ -1,6 +1,7 @@
 {
   "name": "flask-react-dev",
   "scripts": {
+    "build": "cd frontend && npm run dev",
     "backend": "python -m flask run",
     "frontend": "cd frontend && npm run dev",
     "app": "concurrently \"npm run backend\" \"npm run frontend\""

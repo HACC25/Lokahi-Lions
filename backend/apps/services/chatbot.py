@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from supabase.client import create_client
-import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
@@ -17,31 +16,28 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
 # Initialize clients
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Use the native google.generativeai for embeddings (as you had before)
-# This supports output_dimensionality parameter
-genai.configure(api_key=GEMINI_API_KEY)
+# Initialize embeddings client using LangChain's wrapper
+embeddings_client = GoogleGenerativeAIEmbeddings(
+    model="gemini-embedding-001",
+    google_api_key=GEMINI_API_KEY
+)
 
 # Use ChatGoogleGenerativeAI for chat (better integration with LangChain)
 chat_model = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash-lite",
     google_api_key=GEMINI_API_KEY,
-    temperature=0.7
+    temperature=0.5
 )
-
 # Conversation history storage
 conversation_history = []
 
 def search_courses(query: str, top_k: int = 5):
-    """Search for relevant courses using semantic similarity"""
-    # Generate embedding for the query with 1536 dimensions to match database
-    # Using native genai for embeddings because it supports output_dimensionality
-    result = genai.embed_content(
-        model="models/gemini-embedding-001",
-        content=query,
-        task_type="retrieval_query",
+    # Generate embedding for the query using LangChain's GoogleGenerativeAIEmbeddings
+    # This returns a list of floats matching the embedding stored in Supabase
+    query_embedding = embeddings_client.embed_query(
+        query,
         output_dimensionality=1536
     )
-    query_embedding = result['embedding']
     
     # Perform similarity search in Supabase
     # Convert list to string format that Supabase expects
@@ -93,7 +89,7 @@ def chat(user_query: str):
     print(f"\n🔍 Searching for relevant courses...")
     
     # For follow-up questions, we might need context from history
-    # Create an enriched query that includes recent context
+    # Create a query that includes recent context
     enriched_query = user_query
     if conversation_history:
         # Get last user question and assistant response for context

@@ -7,6 +7,10 @@ import HomePage from './pages/LandingPage.tsx'
 import ResultsPathway from './pages/Results.tsx'
 import SignupForm from './pages/Signup.tsx'
 import LoginForm from './pages/Login.tsx'
+import ProfilePage from './pages/page-profile.tsx';
+import SignIn from './pages/page-signin.tsx';
+import SignUp from './pages/page-signup.tsx';
+import SignOutModal from './pages/page-signout.tsx';
 
 let isLoggedIn: boolean = false;
 const rootElement = document.getElementById("root");
@@ -21,8 +25,8 @@ ReactDOM.createRoot(rootElement).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/signup" element={<SignupForm />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
           <Route path="/pathway" 
             element={
             <ProtectedRoute>

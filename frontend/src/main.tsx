@@ -13,9 +13,7 @@ import './styles/input.css';
 import './App.css';
 import React from 'react';
 
-let isLoggedIn: boolean = false;
 const rootElement = document.getElementById("root");
-
 if (!rootElement) {
   throw new Error("Root element not found");
 }
@@ -48,17 +46,17 @@ const AppRoutes = () => {
         <Route
           path="/profile"
           element={
-            // <ProtectedRoute>
-            <ProfilePage />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/pathway"
           element={
-            // <ProtectedRoute>
-            <ResultsPathway />
-            // </ProtectedRoute>
+            <ProtectedRoute>
+              <ResultsPathway />
+            </ProtectedRoute>
           }
         />
       </Routes>

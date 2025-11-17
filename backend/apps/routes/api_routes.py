@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import os
-import time
 
 # Load environment variables from .env
 load_dotenv()
@@ -16,70 +15,91 @@ DBNAME = os.getenv("dbname")
 
 # Connect to supabase database
 DATABASE_URL: str = os.getenv("DATABASE_URL")
-#DATABASE_URL = f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}"
-
 # Publishable supabase key
 SUPABASE_KEY: str = os.getenv("SUPABASE_KEY")
+
 supabase: Client = create_client(DATABASE_URL, SUPABASE_KEY)
 
-api_bp = Blueprint('api', __name__, url_prefix='/api')  
+api_bp = Blueprint('api', __name__, url_prefix='/api')
+
 
 # User signup route
-@api_bp.route('/signup', methods=['POST', 'OPTIONS'])
+@api_bp.route('/signup', methods=['POST'])
 def signup():
-    if request.method == "OPTIONS":
-        # Preflight request success response
-        return "", 200
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-
-    # Check if email in database already exists
-    response = (
-        supabase.table("profiles")
-        .select("email")
-        .eq("email", email)
-        .maybe_single()
-        .execute()
-    )
-    if response is not None and response.data is not None:
-        return jsonify({"message": "A profile with this email already exists"}), 400
     
-    # TODO Hash password and insert new user into database
-    hashed_password = password 
-    response = (
-        supabase.table("profiles")
-        .insert({"email": email, "password": password, "student_status": "freshmen", "attending_campus": "manoa"})
-        .execute()
-    )
-    return jsonify({"message": "User created successfully"}), 201
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not email or not password:
+            return jsonify({"message": "Email and password are required"}), 400
+        
+        # Check if email in database already exists
+        response = (
+            supabase.table("profiles")
+            .select("email")
+            .eq("email", email)
+            .maybe_single()
+            .execute()
+        )
+        
+        if response is not None and response.data is not None:
+            return jsonify({"message": "A profile with this email already exists"}), 400
+        
+        # TODO: Hash password before storing (use bcrypt or werkzeug.security)
+        # For now, storing as plain text (NOT recommended for production)
+        response = (
+            supabase.table("profiles")
+            .insert({
+                "email": email, 
+                "password": password, 
+                "student_status": "freshmen", 
+                "attending_campus": "manoa"
+            })
+            .execute()
+        )
+        
+        return jsonify({"message": "User created successfully"}), 201
+    
+    except Exception as e:
+        print(f"Signup error: {str(e)}")
+        return jsonify({"message": "An error occurred during signup"}), 500
+
 
 # User login route
-@api_bp.route('/login', methods=['POST', 'OPTIONS'])
+@api_bp.route('/login', methods=['POST'])
 def login():
-    if request.method == "OPTIONS":
-        # Preflight request success response
-        return "", 200
     if not request.is_json:
         return jsonify({"message": "Request must be JSON"}), 400
     
-    data = request.get_json()
-    email = data.get('email')
-    password = data.get('password')
-    hashed_password = password
-
-    # Check database for user with matching email and password
-    response = (
-        supabase.table("profiles")
-        .select("email", "password")
-        .eq("email", email)
-        .eq("password", hashed_password)
-        .maybe_single()
-        .execute()
-    )
-    if response is not None and response.data is not None:
-        return jsonify({"message": "Login successful", "loginAttempt": "success"}), 200
-    return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        
+        if not email or not password:
+            return jsonify({"message": "Email and password are required", "loginAttempt": "fail"}), 400
+        
+        # Check database for user with matching email and password
+        response = (
+            supabase.table("profiles")
+            .select("email", "password")
+            .eq("email", email)
+            .eq("password", password)
+            .maybe_single()
+            .execute()
+        )
+        
+        print(f"Login attempt for {email}: {response.data}")  # Debug log
+        
+        if response is not None and response.data is not None:
+            return jsonify({"message": "Login successful", "loginAttempt": "success"}), 200
+        
+        return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
     
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        return jsonify({"message": "An error occurred during login", "loginAttempt": "fail"}), 500

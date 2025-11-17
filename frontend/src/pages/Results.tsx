@@ -123,6 +123,7 @@ export default function ResultsPathway() {
   };
 
   const handleSignOut = () => {
+    logout();
     navigate('/');
   };
 

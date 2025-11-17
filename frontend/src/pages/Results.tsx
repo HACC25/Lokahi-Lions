@@ -504,7 +504,6 @@ export default function ResultsPathway() {
                 <div className="bg-white border border-emerald-100 rounded-3xl p-6 shadow-sm">
                   <div className="mb-4">
                     <p className="text-xs uppercase tracking-[0.35em] text-emerald-500">Resource hub</p>
-                    <h3 className="text-xl font-semibold text-slate-800">Stay connected</h3>
                     <p className="text-sm text-slate-600 mt-1">
                       Use these UH tools to chat with advisors and experiment with possible journeys before committing to a pathway.
                     </p>

@@ -25,9 +25,9 @@ ReactDOM.createRoot(rootElement).render(
           <Route path="/login" element={<LoginForm />} />
           <Route path="/pathway" 
             element={
-            <ProtectedRoute>
+            // <ProtectedRoute>
               <ResultsPathway />
-            </ProtectedRoute>
+            // </ProtectedRoute>
             } 
           />
         </Routes>

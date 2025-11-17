@@ -34,7 +34,7 @@ const presetExperience: CareerInterest[] = [
   { id: "part-time", label: "Part-time Work", color: "bg-pink-100 border-pink-300" },
   { id: "volunteering", label: "Volunteering", color: "bg-indigo-100 border-indigo-300" },
   { id: "research", label: "Research Projects", color: "bg-cyan-100 border-cyan-300" },
-  { id: "club-projects", label: "Club Projects", color: "bg-red-100 border-red-300" },
+  { id: "none", label: "None", color: "bg-red-100 border-red-300" },
 ];
 
 const communityColleges = [
@@ -75,6 +75,9 @@ export default function SignUp() {
     password: "",
     confirmPassword: "",
   });
+  const selectedOptionClasses =
+    "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md";
+  const unselectedOptionClasses = "bg-white border-slate-200 hover:border-emerald-200";
   const primaryButtonClasses =
     "rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-emerald-200 shadow-lg hover:shadow-xl";
   const outlineButtonClasses =
@@ -91,14 +94,6 @@ export default function SignUp() {
   const handleBegin = () => {
     setShowIntro(false);
   };
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
-
   const toggleInterest = (id: string) => {
     setSelectedInterests((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
@@ -132,47 +127,16 @@ export default function SignUp() {
     setSelectedExperience((prev) => prev.filter((i) => i !== experience));
   };
 
-  const colorOptions = [
-    "bg-blue-100 border-blue-300",
-    "bg-green-100 border-green-300",
-    "bg-purple-100 border-purple-300",
-    "bg-yellow-100 border-yellow-300",
-    "bg-pink-100 border-pink-300",
-    "bg-indigo-100 border-indigo-300",
-    "bg-teal-100 border-teal-300",
-    "bg-orange-100 border-orange-300",
-    "bg-red-100 border-red-300",
-    "bg-cyan-100 border-cyan-300",
-  ];
-
-  const getInterestColor = (interestId: string) => {
-    const found = presetInterests.find((i) => i.id === interestId);
-    if (found) return found.color;
-    
-    // For custom interests, always use blue
-    return "bg-blue-100 border-blue-300";
-  };
+  const getHighlightColor = () => "bg-emerald-50 border-emerald-200";
 
   const getInterestLabel = (interestId: string) => {
     const found = presetInterests.find((i) => i.id === interestId);
     return found ? found.label : interestId;
   };
 
-  const getSkillColor = (skillId: string) => {
-    const found = presetSkills.find((i) => i.id === skillId);
-    if (found) return found.color;
-    return "bg-blue-100 border-blue-300";
-  };
-
   const getSkillLabel = (skillId: string) => {
     const found = presetSkills.find((i) => i.id === skillId);
     return found ? found.label : skillId;
-  };
-
-  const getExperienceColor = (experienceId: string) => {
-    const found = presetExperience.find((i) => i.id === experienceId);
-    if (found) return found.color;
-    return "bg-blue-100 border-blue-300";
   };
 
   const getExperienceLabel = (experienceId: string) => {
@@ -286,8 +250,8 @@ export default function SignUp() {
 
     // Step 3: Validate experience
     if (step === 3) {
-      if (selectedExperience.length < 2) {
-        setErrorMessage("Required: Please select at least 2 experiences");
+      if (selectedExperience.length < 1) {
+        setErrorMessage("Required: Please select at least 1 experience or none");
         return;
       }
       setErrorMessage("");
@@ -424,6 +388,17 @@ export default function SignUp() {
     });
   };
 
+  const onboardingTimeline = [
+    { id: 1, label: "Curate interests" },
+    { id: 2, label: "Highlight skills" },
+    { id: 3, label: "Showcase experience" },
+    { id: 4, label: "Student status" },
+    { id: 5, label: "Preferred campus" },
+    { id: 6, label: "Create account" },
+  ];
+
+  const progressPercentage = Math.round((step / TOTAL_STEPS) * 100);
+
   if (showIntro) {
     return (
       <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9] flex items-center justify-center px-6">
@@ -437,19 +412,8 @@ export default function SignUp() {
             Build your personalized UH journey in a few guided steps
           </h1>
           <p className="text-base text-slate-600">
-            We’ll ask about your interests, strengths, and campus goals so your AI advisor can curate the right pathways. This takes about two minutes.
+            We’ll ask about your interests, skills, and experiences so your AI assistant can curate the right careers and pathways. This can take about three minutes.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-left text-sm text-slate-600">
-            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
-              Tailored degree and campus matches
-            </div>
-            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
-              Advisor-ready notes & reminders
-            </div>
-            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
-              AI nudges to keep you on track
-            </div>
-          </div>
           <div className="flex justify-center">
             <Button
               onClick={handleBegin}
@@ -463,616 +427,541 @@ export default function SignUp() {
     );
   }
 
+
   return (
-    <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
+    <div className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-12 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
-        <div className="absolute -bottom-24 right-16 w-80 h-80 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{ animationDelay: "1s" }}></div>
+        <div className="absolute top-12 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute top-1/3 right-12 w-80 h-80 bg-emerald-100 rounded-full blur-3xl opacity-35"></div>
+        <div className="absolute -bottom-24 left-1/3 w-96 h-96 bg-lime-200 rounded-full blur-3xl opacity-30"></div>
         <div
-          className="absolute inset-0 opacity-[0.15]"
+          className="absolute inset-0 opacity-[0.12]"
           style={{
             backgroundImage: `
               linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
               linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)
             `,
-            backgroundSize: "140px 140px"
+            backgroundSize: "140px 140px",
           }}
         ></div>
       </div>
-      <div className="relative z-10 h-full px-4 py-12 flex items-center justify-center">
-        <div
-          className={`w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl border border-emerald-100 backdrop-blur-xl p-8 transition-all duration-700 ease-out max-h-[90vh] overflow-y-auto ${
-            questionnaireReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          }`}
-        >
-        {/* Progress indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-slate-500">
-              Question {step} of {TOTAL_STEPS}
-            </span>
-          </div>
-          <div className="w-full bg-emerald-50 rounded-full h-2">
-            <div
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
-            />
-          </div>
-        </div>
 
-        {/* Step 1: Career Interests */}
-        {step === 1 && (
-          <div>
-            <h2 className="mb-2">What are your interests?</h2>
-            <p className="text-slate-500 mb-6">
-              Select one or more options, or type your own
-            </p>
-
-            {/* Display all selected interests */}
-            {selectedInterests.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                {selectedInterests.map((interestId) => (
-                  <span
-                    key={interestId}
-                    className={`px-3 py-1 border-2 rounded-lg flex items-center gap-2 ${getInterestColor(interestId)}`}
-                  >
-                    {getInterestLabel(interestId)}
-                    <button
-                      onClick={() => removeInterest(interestId)}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {presetInterests.map((interest) => (
-                <button
-                  key={interest.id}
-                  onClick={() => toggleInterest(interest.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedInterests.includes(interest.id)
-                      ? interest.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {interest.label}
-                </button>
-              ))}
-              
-              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
-                <Input
-                  placeholder="Enter your interests..."
-                  value={customInterestInput}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    const capitalizedValue = capitalizeWords(value);
-                    setCustomInterestInput(capitalizedValue);
-                  }}
-                  onKeyDown={handleCustomInterestKeyDown}
-                  className="border-0 p-0 h-auto focus-visible:ring-0"
-                />
-                <p className="text-xs text-slate-400 mt-2">
-                  Press Enter or comma to add
-                </p>
-              </div>
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-end">
-              <Button onClick={handleNext} className={primaryButtonClasses}>
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Skills */}
-        {step === 2 && (
-          <div>
-            <h2 className="mb-2">What skills do you have?</h2>
-            <p className="text-slate-500 mb-6">
-              Select one or more skills. Choose at least two to continue.
-            </p>
-
-            {selectedSkills.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                {selectedSkills.map((skillId) => (
-                  <span
-                    key={skillId}
-                    className={`px-3 py-1 border-2 rounded-lg flex items-center gap-2 ${getSkillColor(skillId)}`}
-                  >
-                    {getSkillLabel(skillId)}
-                    <button
-                      onClick={() => removeSkill(skillId)}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {presetSkills.map((skill) => (
-                <button
-                  key={skill.id}
-                  onClick={() => toggleSkill(skill.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedSkills.includes(skill.id)
-                      ? skill.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {skill.label}
-                </button>
-              ))}
-
-              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
-                <Input
-                  placeholder="Enter your skills..."
-                  value={customSkillInput}
-                  onChange={(e) => {
-                    const value = capitalizeWords(e.target.value);
-                    setCustomSkillInput(value);
-                  }}
-                  onKeyDown={handleCustomSkillKeyDown}
-                  className="border-0 p-0 h-auto focus-visible:ring-0"
-                />
-                <p className="text-xs text-slate-400 mt-2">
-                  Press Enter or comma to add
-                </p>
-              </div>
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button onClick={handleNext} className={primaryButtonClasses}>
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Experience */}
-        {step === 3 && (
-          <div>
-            <h2 className="mb-2">What experience do you have?</h2>
-            <p className="text-slate-500 mb-6">
-              Select one or more experiences. Choose at least two to continue.
-            </p>
-
-            {selectedExperience.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                {selectedExperience.map((experienceId) => (
-                  <span
-                    key={experienceId}
-                    className={`px-3 py-1 border-2 rounded-lg flex items-center gap-2 ${getExperienceColor(experienceId)}`}
-                  >
-                    {getExperienceLabel(experienceId)}
-                    <button
-                      onClick={() => removeExperience(experienceId)}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {presetExperience.map((experience) => (
-                <button
-                  key={experience.id}
-                  onClick={() => toggleExperience(experience.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedExperience.includes(experience.id)
-                      ? experience.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {experience.label}
-                </button>
-              ))}
-
-              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
-                <Input
-                  placeholder="Enter your experiences..."
-                  value={customExperienceInput}
-                  onChange={(e) => {
-                    const value = capitalizeWords(e.target.value);
-                    setCustomExperienceInput(value);
-                  }}
-                  onKeyDown={handleCustomExperienceKeyDown}
-                  className="border-0 p-0 h-auto focus-visible:ring-0"
-                />
-                <p className="text-xs text-slate-400 mt-2">
-                  Press Enter or comma to add
-                </p>
-              </div>
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button onClick={handleNext} className={primaryButtonClasses}>
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4: Student Status */}
-        {step === 4 && !showUndergraduateOptions && (
-          <div>
-            <h2 className="mb-2">What type of student are you?</h2>
-            <p className="text-slate-500 mb-6">
-              Select one. You can change this later.
-            </p>
-
-            {/* Display selected status at top */}
-            {studentStatus && (
-              <div className="mb-6">
-                <span className="px-3 py-1 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center gap-2 w-fit">
-                  {getStudentStatusLabel()}
-                  <button
-                    onClick={removeStudentStatus}
-                    className="text-slate-500 hover:text-slate-700"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {[
-                { id: "incoming-student", label: "Incoming Student", color: "bg-red-100 border-red-300" },
-                { id: "undergraduate", label: "Undergraduate", color: "bg-blue-100 border-blue-300" },
-                { id: "graduate-student", label: "Graduate Student", color: "bg-purple-100 border-purple-300" },
-                { id: "graduated", label: "Graduated", color: "bg-green-100 border-green-300" },
-              ].map((status) => (
-                <button
-                  key={status.id}
-                  onClick={() => handleStudentStatus(status.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    isStudentStatusActive(status.id)
-                      ? status.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div>{status.label}</div>
-                  {status.id === "undergraduate" && (
-                    <div className="text-sm text-slate-500 mt-1">Click to see options &rarr;</div>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext} 
-                className={primaryButtonClasses}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 4b: Undergraduate Year Selection */}
-        {step === 4 && showUndergraduateOptions && (
-          <div>
-            <h2 className="mb-2">Which year are you in?</h2>
-            <p className="text-slate-500 mb-6">
-              Select your current year. You can change this later.
-            </p>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {[
-                { id: "freshman", label: "Freshman", color: "bg-orange-100 border-orange-300" },
-                { id: "sophomore", label: "Sophomore", color: "bg-yellow-100 border-yellow-300" },
-                { id: "junior", label: "Junior", color: "bg-pink-100 border-pink-300" },
-                { id: "senior", label: "Senior", color: "bg-teal-100 border-teal-300" },
-              ].map((year) => (
-                <button
-                  key={year.id}
-                  onClick={() => handleUndergraduateYear(year.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    undergraduateYear === year.id
-                      ? year.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {year.label}
-                </button>
-              ))}
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext} 
-                className={primaryButtonClasses}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 5: UH Campus */}
-        {step === 5 && !showCommunityColleges && (
-          <div>
-            <h2 className="mb-2">Which UH campus do you attend?</h2>
-            <p className="text-slate-500 mb-6">
-              Select the option that best describes you
-            </p>
-
-            {/* Display selected campus at top */}
-            {selectedCampus && (
-              <div className="mb-6">
-                <span className="px-3 py-1 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center gap-2 w-fit">
-                  {getCampusLabel()}
-                  <button
-                    onClick={removeCampus}
-                    className="text-slate-500 hover:text-slate-700"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {[
-                { id: "uh-manoa", label: "UH Mānoa", color: "bg-emerald-100 border-emerald-300" },
-                { id: "uh-hilo", label: "UH Hilo", color: "bg-orange-100 border-orange-300" },
-                { id: "uh-west-oahu", label: "UH West Oʻahu", color: "bg-blue-100 border-blue-300" },
-                { id: "uh-cc", label: "UH Community College", color: "bg-purple-100 border-purple-300" },
-              ].map((campus) => (
-                <button
-                  key={campus.id}
-                  onClick={() => handleCampusSelection(campus.id)}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    isCampusButtonActive(campus.id)
-                      ? campus.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  <div>{campus.label}</div>
-                  {campus.id === "uh-cc" && (
-                    <div className="text-sm text-slate-500 mt-1">Click to see options &rarr;</div>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext} 
-                className={primaryButtonClasses}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 5b: Community College Selection */}
-        {step === 5 && showCommunityColleges && (
-          <div>
-            <h2 className="mb-2">Which UH Community College?</h2>
-            <p className="text-slate-500 mb-6">
-              Select your community college
-            </p>
-
-            {/* Display selected campus at top */}
-            {selectedCampus && (
-              <div className="mb-6">
-                <span className="px-3 py-1 bg-blue-100 border-2 border-blue-300 rounded-lg flex items-center gap-2 w-fit">
-                  {getCampusLabel()}
-                  <button
-                    onClick={removeCampus}
-                    className="text-slate-500 hover:text-slate-700"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {communityColleges.map((college) => (
-                <button
-                  key={college.id}
-                  onClick={() => {
-                    setSelectedCampus(college.id);
-                    setShowCommunityColleges(false);
-                    setErrorMessage("");
-                  }}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedCampus === college.id
-                      ? college.color
-                      : "bg-white border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {college.label}
-                </button>
-              ))}
-            </div>
-
-            {errorMessage && (
-              <p className="text-rose-600 mb-4">{errorMessage}</p>
-            )}
-
-            <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext} 
-                className={primaryButtonClasses}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 6: Create Account */}
-        {step === 6 && (
-          <div className="space-y-5">
+      <div className="relative z-10 min-h-screen px-6 py-10">
+        <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[1.05fr,0.95fr] items-start">
+          <div className="space-y-6">
             <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Final step</p>
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">Create your account</h2>
-              <p className="text-sm text-slate-600">
-                We’ll securely save your info so you can return, continue exploring UH pathways, and prepare for advising with everything synced.
+              <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">Pathfinder onboarding</p>
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 mt-2">Tell us about your goals</h1>
+              <p className="text-base text-slate-600 mt-3">
+                Answer six quick prompts so your UH Pathfinder AI advisor can personalize degrees, campuses, and action plans just for you.
               </p>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="firstName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">First Name</Label>
-                <Input
-                  id="firstName"
-                  placeholder="Enter your first name"
-                  value={formData.firstName}
-                  onChange={(e) => {
-                    const value = capitalizeWords(e.target.value);
-                    setFormData({ ...formData, firstName: value });
-                  }}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="lastName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Last Name</Label>
-                <Input
-                  id="lastName"
-                  placeholder="Enter your last name"
-                  value={formData.lastName}
-                  onChange={(e) => {
-                    const value = capitalizeWords(e.target.value);
-                    setFormData({ ...formData, lastName: value });
-                  }}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="email" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="password" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Confirm Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Re-enter your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) =>
-                      setFormData({ ...formData, confirmPassword: e.target.value })
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {passwordError && (
-                <p className="text-rose-600">{passwordError}</p>
-              )}
-
-              {errorMessage && (
-                <p className="text-rose-600">{errorMessage}</p>
-              )}
-
-              <div className="flex justify-between pt-4">
-                <Button onClick={handleBack} variant="outline" type="button" className={outlineButtonClasses}>
-                  Back
-                </Button>
-                <Button type="submit" className={primaryButtonClasses}>
-                  Create Account
-                </Button>
-              </div>
-            </form>
           </div>
-        )}
+
+          <div
+            className={`bg-white/90 border border-emerald-100 rounded-3xl shadow-2xl p-8 space-y-6 backdrop-blur-xl transition-all duration-700 ${
+              questionnaireReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+            }`}
+          >
+            {step === 1 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 1 · Curate interests</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">What are your interests?</h2>
+                  <p className="text-sm text-slate-600">Select at least three focus areas or add your own to tailor suggestions.</p>
+                </div>
+
+                {selectedInterests.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedInterests.map((interestId) => (
+                      <span
+                        key={interestId}
+                        className={`px-4 py-2 border-2 rounded-2xl flex items-center gap-2 text-sm font-semibold text-slate-700 shadow-sm ${getHighlightColor(interestId)}`}
+                      >
+                        {getInterestLabel(interestId)}
+                        <button onClick={() => removeInterest(interestId)} className="text-slate-500 hover:text-slate-800">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {presetInterests.map((interest) => (
+                    <button
+                      key={interest.id}
+                      onClick={() => toggleInterest(interest.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        selectedInterests.includes(interest.id)
+                          ? selectedOptionClasses
+                          : unselectedOptionClasses
+                      }`}
+                    >
+                      {interest.label}
+                    </button>
+                  ))}
+                  <div className="p-4 rounded-2xl border-2 border-slate-200 bg-white">
+                    <Input
+                      placeholder="Enter your interests..."
+                      value={customInterestInput}
+                      onChange={(e) => {
+                        const capitalizedValue = capitalizeWords(e.target.value);
+                        setCustomInterestInput(capitalizedValue);
+                      }}
+                      onKeyDown={handleCustomInterestKeyDown}
+                      className="border-0 p-0 h-auto focus-visible:ring-0"
+                    />
+                    <p className="text-xs text-slate-400 mt-2">Press Enter or comma to add</p>
+                  </div>
+                </div>
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-end">
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 2 · Highlight skills</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">What skills do you have?</h2>
+                  <p className="text-sm text-slate-600">Choose at least two skill areas you want UH to notice.</p>
+                </div>
+
+                {selectedSkills.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSkills.map((skillId) => (
+                      <span
+                        key={skillId}
+                        className={`px-4 py-2 border-2 rounded-2xl flex items-center gap-2 text-sm font-semibold text-slate-700 shadow-sm ${getHighlightColor(skillId)}`}
+                      >
+                        {getSkillLabel(skillId)}
+                        <button onClick={() => removeSkill(skillId)} className="text-slate-500 hover:text-slate-800">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {presetSkills.map((skill) => (
+                    <button
+                      key={skill.id}
+                      onClick={() => toggleSkill(skill.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        selectedSkills.includes(skill.id)
+                          ? selectedOptionClasses
+                          : unselectedOptionClasses
+                      }`}
+                    >
+                      {skill.label}
+                    </button>
+                  ))}
+                  <div className="p-4 rounded-2xl border-2 border-slate-200 bg-white">
+                    <Input
+                      placeholder="Enter your skills..."
+                      value={customSkillInput}
+                      onChange={(e) => {
+                        const capitalizedValue = capitalizeWords(e.target.value);
+                        setCustomSkillInput(capitalizedValue);
+                      }}
+                      onKeyDown={handleCustomSkillKeyDown}
+                      className="border-0 p-0 h-auto focus-visible:ring-0"
+                    />
+                    <p className="text-xs text-slate-400 mt-2">Press Enter or comma to add</p>
+                  </div>
+                </div>
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-between">
+                  <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
+                    Back
+                  </Button>
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 3 · Showcase experience</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">What experience do you have?</h2>
+                  <p className="text-sm text-slate-600">Highlight how you’ve been involved so far. Choose at least one experiences or none.</p>
+                </div>
+
+                {selectedExperience.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedExperience.map((experienceId) => (
+                      <span
+                        key={experienceId}
+                        className={`px-4 py-2 border-2 rounded-2xl flex items-center gap-2 text-sm font-semibold text-slate-700 shadow-sm ${getHighlightColor(experienceId)}`}
+                      >
+                        {getExperienceLabel(experienceId)}
+                        <button onClick={() => removeExperience(experienceId)} className="text-slate-500 hover:text-slate-800">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {presetExperience.map((experience) => (
+                    <button
+                      key={experience.id}
+                      onClick={() => toggleExperience(experience.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        selectedExperience.includes(experience.id)
+                          ? selectedOptionClasses
+                          : unselectedOptionClasses
+                      }`}
+                    >
+                      {experience.label}
+                    </button>
+                  ))}
+                  <div className="p-4 rounded-2xl border-2 border-slate-200 bg-white">
+                    <Input
+                      placeholder="Enter your experience..."
+                      value={customExperienceInput}
+                      onChange={(e) => {
+                        const capitalizedValue = capitalizeWords(e.target.value);
+                        setCustomExperienceInput(capitalizedValue);
+                      }}
+                      onKeyDown={handleCustomExperienceKeyDown}
+                      className="border-0 p-0 h-auto focus-visible:ring-0"
+                    />
+                    <p className="text-xs text-slate-400 mt-2">Press Enter or comma to add</p>
+                  </div>
+                </div>
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-between">
+                  <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
+                    Back
+                  </Button>
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 4 · Student status</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">Where are you in your journey?</h2>
+                  <p className="text-sm text-slate-600">Tell us your current status so we can surface the right resources.</p>
+                </div>
+
+                {(studentStatus || undergraduateYear) && (
+                  <div>
+                    <span className="px-4 py-2 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-center gap-2 text-sm font-semibold text-emerald-700 w-fit">
+                      {getStudentStatusLabel()}
+                      <button onClick={removeStudentStatus} className="text-slate-500 hover:text-slate-800">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { id: 'incoming-student', label: 'Incoming Student' },
+                    { id: 'undergraduate', label: 'Undergraduate Student' },
+                    { id: 'graduate-student', label: 'Graduate Student' },
+                    { id: 'graduated', label: 'Graduated' },
+                  ].map((status) => (
+                    <button
+                      key={status.id}
+                      onClick={() => handleStudentStatus(status.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        isStudentStatusActive(status.id)
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md'
+                          : 'bg-white border-slate-200 hover:border-emerald-200'
+                      }`}
+                    >
+                      {status.label}
+                    </button>
+                  ))}
+                </div>
+
+                {showUndergraduateOptions && (
+                  <div>
+                    <p className="text-sm text-slate-600 mb-3">Select your year:</p>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      {['freshman', 'sophomore', 'junior', 'senior'].map((year) => (
+                        <button
+                          key={year}
+                          onClick={() => handleUndergraduateYear(year)}
+                          className={`p-4 rounded-2xl border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                            undergraduateYear === year
+                              ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md'
+                              : 'bg-white border-slate-200 hover:border-emerald-200'
+                          }`}
+                        >
+                          {year.charAt(0).toUpperCase() + year.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-between">
+                  <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
+                    Back
+                  </Button>
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 5 && !showCommunityColleges && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 5 · Preferred campus</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">Which UH campus are you exploring?</h2>
+                  <p className="text-sm text-slate-600">Select your primary campus preference to unlock localized resources.</p>
+                </div>
+
+                {selectedCampus && (
+                  <div>
+                    <span className="px-4 py-2 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-center gap-2 text-sm font-semibold text-emerald-700 w-fit">
+                      {getCampusLabel()}
+                      <button onClick={removeCampus} className="text-slate-500 hover:text-slate-800">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { id: 'uh-manoa', label: 'UH Mānoa' },
+                    { id: 'uh-hilo', label: 'UH Hilo' },
+                    { id: 'uh-west-oahu', label: 'UH West Oʻahu' },
+                    { id: 'uh-cc', label: 'UH Community Colleges' },
+                  ].map((campus) => (
+                    <button
+                      key={campus.id}
+                      onClick={() => handleCampusSelection(campus.id)}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        isCampusButtonActive(campus.id)
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-md'
+                          : 'bg-white border-slate-200 hover:border-emerald-200'
+                      }`}
+                    >
+                      <div className="font-semibold text-slate-900">{campus.label}</div>
+                      {campus.id === 'uh-cc' && <p className="text-sm text-slate-500 mt-1">Tap to choose a community college →</p>}
+                    </button>
+                  ))}
+                </div>
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-between">
+                  <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
+                    Back
+                  </Button>
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 5 && showCommunityColleges && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 5 · Community colleges</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">Which UH Community College?</h2>
+                  <p className="text-sm text-slate-600">Pick the location closest to you to surface local programs.</p>
+                </div>
+
+                {selectedCampus && (
+                  <div>
+                    <span className="px-4 py-2 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-center gap-2 text-sm font-semibold text-emerald-700 w-fit">
+                      {getCampusLabel()}
+                      <button onClick={removeCampus} className="text-slate-500 hover:text-slate-800">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {communityColleges.map((college) => (
+                    <button
+                      key={college.id}
+                      onClick={() => {
+                        setSelectedCampus(college.id);
+                        setShowCommunityColleges(false);
+                        setErrorMessage("");
+                      }}
+                      className={`p-4 rounded-2xl border-2 transition-all text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-100 ${
+                        selectedCampus === college.id
+                          ? selectedOptionClasses
+                          : unselectedOptionClasses
+                      }`}
+                    >
+                      {college.label}
+                    </button>
+                  ))}
+                </div>
+
+                {errorMessage && (
+                  <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                )}
+
+                <div className="flex justify-between">
+                  <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
+                    Back
+                  </Button>
+                  <Button onClick={handleNext} className={primaryButtonClasses}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {step === 6 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Step 6 · Create account</p>
+                  <h2 className="text-2xl font-semibold text-slate-900 mb-2">Save your UH Pathfinder journey</h2>
+                  <p className="text-sm text-slate-600">Add your details so you can sync interests, AI chats, and saved careers on any device.</p>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="firstName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">First Name</Label>
+                    <Input
+                      id="firstName"
+                      placeholder="Enter your first name"
+                      value={formData.firstName}
+                      onChange={(e) => {
+                        const value = capitalizeWords(e.target.value);
+                        setFormData({ ...formData, firstName: value });
+                      }}
+                      className="rounded-2xl border border-emerald-100 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-100 focus-visible:border-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="lastName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Enter your last name"
+                      value={formData.lastName}
+                      onChange={(e) => {
+                        const value = capitalizeWords(e.target.value);
+                        setFormData({ ...formData, lastName: value });
+                      }}
+                      className="rounded-2xl border border-emerald-100 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-100 focus-visible:border-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="rounded-2xl border border-emerald-100 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-100 focus-visible:border-emerald-400"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="password" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="rounded-2xl border border-emerald-100 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-100 focus-visible:border-emerald-400 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-emerald-600"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Confirm Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder="Re-enter your password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        className="rounded-2xl border border-emerald-100 bg-white text-slate-900 placeholder:text-slate-400 focus-visible:ring-emerald-100 focus-visible:border-emerald-400 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-emerald-600"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {passwordError && (
+                    <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{passwordError}</p>
+                  )}
+
+                  {errorMessage && (
+                    <p className="text-sm text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-2">{errorMessage}</p>
+                  )}
+
+                  <div className="flex justify-between pt-4">
+                    <Button onClick={handleBack} variant="outline" type="button" className={outlineButtonClasses}>
+                      Back
+                    </Button>
+                    <Button type="submit" className={primaryButtonClasses}>
+                      Create account
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
-  </div>
   );
 }

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle, ChevronDown, ChevronUp, ChevronsDown } from 'lucide-react';
+import { Sparkles, Brain, PlayCircle, HelpCircle, ChevronDown, ChevronUp, ChevronsDown } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
-  const [openStep, setOpenStep] = useState<number | null>(0); // 0 = first open, or null = all closed
+  const [openStep, setOpenStep] = useState<number | null>(0);
   const [whyVisible, setWhyVisible] = useState(false);
   const whyRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +43,7 @@ export default function HomePage() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setWhyVisible(true);
-            observer.disconnect(); // only animate once
+            observer.disconnect(); 
           }
         });
       },
@@ -63,7 +63,7 @@ export default function HomePage() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setFaqVisible(true);
-            observer.disconnect(); // only animate once
+            observer.disconnect();
           }
         });
       },
@@ -129,7 +129,7 @@ export default function HomePage() {
               <span className="bg-gradient-to-r from-emerald-500 via-lime-400 to-emerald-300 bg-clip-text text-transparent"> UH Pathfinder!</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed">
-              Our AI analyzes your interests, skills, and experience to match you with careers and UH educational path that actually fits you. Get started now, or watch a quick walkthrough to see how it works!
+              Tell us a little bit about you and our AI will connect you to possible careers and UH programs to explore. Get started now or watch a quick walkthrough to see how it works!
             </p>
 
             {/* New hero buttons */}
@@ -210,7 +210,7 @@ export default function HomePage() {
                 )}
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Walkthrough</h3>
-                  <p className="text-slate-600 text-sm">Learn how to use all features, from interest input to career exploration</p>
+                  <p className="text-slate-600 text-sm">Learn how to use all features, from your interest input to career exploration</p>
                 </div>
               </div>
             </div>
@@ -221,12 +221,12 @@ export default function HomePage() {
                 {
                   step: '1',
                   title: 'Tell us about yourself',
-                  desc: 'When you sign up, pick your interests, skills, experiences, student status (e.g., incoming, undergraduate, transfer), and your UH campus. This helps UH Pathfinder personalize your results.'
+                  desc: 'Start by telling us about yourself — your interests, skills, experiences, student status (incoming, undergraduate, graduate), and your UH campus. UH Pathfinder uses this to tailor the results to you.'
                 },
                 {
                   step: '2',
                   title: 'Explore your AI-matched careers',
-                  desc: 'Our AI uses your answers to suggest careers or specific jobs, along with related UH majors and example paths you could take next.'
+                  desc: 'Our AI uses your answers to suggest careers or specific jobs, along with related UH majors and sample paths you could take next.'
                 },
                 {
                   step: '3',
@@ -279,9 +279,6 @@ export default function HomePage() {
                 <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Proof it’s more than a career quiz</p>
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Why UH Pathfinder?</h2>
-                  <p className="text-sm text-slate-500">
-                    What makes this different from a random career quiz
-                  </p>
                 </div>
               </div>
 
@@ -349,7 +346,7 @@ export default function HomePage() {
                   },
                   {
                     q: 'How do I sign up and who can use it?',
-                    a: 'Any UH student can create an account with their email and choose their campus and student status (incoming, undergraduate, transfer, etc.). The experience is tailored around UH programs and terminology.'
+                    a: 'Any UH student can create an account with their email and choose their campus and student status (incoming, undergraduate, graduate, etc.). The experience is tailored around UH programs and terminology.'
                   },
                   {
                     q: 'Will this replace meeting with an advisor?',

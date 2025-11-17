@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { UserCircle, Clock, FileText, X, Star, Target } from "lucide-react";
+import { UserCircle, FileText, X } from "lucide-react";
 import { ScrollArea } from "../components/ui/scroll-area";
 import React from "react";
 
@@ -94,6 +94,11 @@ export default function ProfilePage() {
     return ["software-engineer", "data-scientist", "ux-designer"];
   });
 
+  const [profileErrors, setProfileErrors] = useState({
+    firstName: "",
+    lastName: "",
+  });
+
   const [savedCareers] = useState<SavedCareer[]>([
     { id: "1", title: "Software Engineer", savedDate: "Nov 12, 2025" },
     { id: "2", title: "AI Specialist", savedDate: "Nov 14, 2025" },
@@ -139,6 +144,20 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = () => {
+    const trimmedFirst = profileData.firstName.trim();
+    const trimmedLast = profileData.lastName.trim();
+
+    const newErrors = {
+      firstName: trimmedFirst ? "" : "Required: Please enter your first name",
+      lastName: trimmedLast ? "" : "Required: Please enter your last name",
+    };
+    setProfileErrors(newErrors);
+
+    if (!trimmedFirst || !trimmedLast) {
+      return;
+    }
+
+    setProfileErrors({ firstName: "", lastName: "" });
     setIsEditingProfile(false);
     if (typeof window !== "undefined") {
       localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
@@ -203,8 +222,8 @@ export default function ProfilePage() {
           {/* Header */}
           <div className="text-center md:text-left space-y-1.5">
             <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">Profile & journey</p>
-            <h1 className="text-3xl font-bold text-slate-900">Keep your UH path in sync</h1>
-            <p className="text-sm text-slate-600 max-w-3xl">Update your interests, stay ready for advising, and keep your UH journey organized in one space.</p>
+            <h1 className="text-3xl font-bold text-slate-900">Stay on top of your UH journey!</h1>
+            <p className="text-sm text-slate-600 max-w-3xl">Update your interests, review your saved paths, and get ready for advising in one place.</p>
           </div>
 
           {/* Profile Details Section */}
@@ -216,7 +235,10 @@ export default function ProfilePage() {
               </div>
               {!isEditingProfile && (
                 <Button
-                  onClick={() => setIsEditingProfile(true)}
+                  onClick={() => {
+                    setProfileErrors({ firstName: "", lastName: "" });
+                    setIsEditingProfile(true);
+                  }}
                   className="rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 text-white font-semibold shadow-emerald-200 shadow-lg"
                 >
                   Edit profile
@@ -236,12 +258,25 @@ export default function ProfilePage() {
                     </Label>
                     <Input
                       id="firstName"
-                      className="rounded-2xl border-emerald-100"
+                      className={`rounded-2xl border ${
+                        profileErrors.firstName ? "border-red-400 focus-visible:ring-red-200" : "border-emerald-100"
+                      }`}
                       value={profileData.firstName}
-                      onChange={(e) =>
-                        setProfileData({ ...profileData, firstName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const capitalizedValue = capitalizeWords(value);
+                        setProfileData({ ...profileData, firstName: capitalizedValue });
+                        if (profileErrors.firstName) {
+                          setProfileErrors((prev) => ({
+                            ...prev,
+                            firstName: capitalizedValue.trim() ? "" : prev.firstName,
+                          }));
+                        }
+                      }}
                     />
+                    {profileErrors.firstName && (
+                      <p className="text-sm text-red-600 mt-2">{profileErrors.firstName}</p>
+                    )}
                   </div>
                   <div>
                     <Label
@@ -252,12 +287,25 @@ export default function ProfilePage() {
                     </Label>
                     <Input
                       id="lastName"
-                      className="rounded-2xl border-emerald-100"
+                      className={`rounded-2xl border ${
+                        profileErrors.lastName ? "border-red-400 focus-visible:ring-red-200" : "border-emerald-100"
+                      }`}
                       value={profileData.lastName}
-                      onChange={(e) =>
-                        setProfileData({ ...profileData, lastName: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const capitalizedValue = capitalizeWords(value);
+                        setProfileData({ ...profileData, lastName: capitalizedValue });
+                        if (profileErrors.lastName) {
+                          setProfileErrors((prev) => ({
+                            ...prev,
+                            lastName: capitalizedValue.trim() ? "" : prev.lastName,
+                          }));
+                        }
+                      }}
                     />
+                    {profileErrors.lastName && (
+                      <p className="text-sm text-red-600 mt-2">{profileErrors.lastName}</p>
+                    )}
                   </div>
                 </div>
 

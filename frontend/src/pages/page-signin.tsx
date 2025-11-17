@@ -84,7 +84,7 @@ export default function SignIn() {
               <span className="text-xs uppercase tracking-[0.35em] text-emerald-500">UH Pathfinder</span>
             </button>
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-              Welcome back to your UH journey
+              Welcome back!
             </h1>
             <p className="text-lg text-slate-600">
               Sign in to continue exploring curated pathways, saved careers, and your AI-generated action plans.
@@ -92,8 +92,8 @@ export default function SignIn() {
             <div className="grid gap-4">
               {[
                 'Resume saved pathways and action plans.',
-                'Chat with the AI advisor without losing context.',
-                'Sync interests and notes with upcoming advising sessions.'
+                'Continue to use the AI assistant for quick questions.',
+                'Use your saved interests and notes to plan your next steps.'
               ].map((item) => (
                 <div key={item} className="flex items-start gap-3">
                   <span className="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span>

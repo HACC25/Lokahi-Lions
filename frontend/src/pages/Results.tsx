@@ -18,6 +18,21 @@ export default function ResultsPathway() {
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [modalPathIndex, setModalPathIndex] = useState<number | null>(null);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const starBalanceUrl = import.meta.env.VITE_STAR_BALANCE_URL || "#";
+  const starWhatIfUrl = import.meta.env.VITE_STAR_WHAT_IF_URL || "#";
+
+  const resourceHubLinks = [
+    {
+      title: 'STAR Balance',
+      description: 'Schedule an advising session and map out your UH semester.',
+      href: 'https://www.star.hawaii.edu/appointment/login.jsp',
+    },
+    {
+      title: 'STAR “What-If” Journey',
+      description: 'Watch the YouTube tutorial to preview alternate degree plans.',
+      href: 'https://www.youtube.com/watch?v=C8T2jN45JGs',
+    },
+  ];
 
   const educationalPaths = [
     {
@@ -513,17 +528,17 @@ export default function ResultsPathway() {
                     </p>
                   </div>
                   <div className="grid gap-3">
-                    {[
-                      { title: 'STAR Balance', description: 'Schedule an advising session and map out your UH semester.' },
-                      { title: 'STAR “What-If” Journey', description: 'Watch the YouTube tutorial to preview alternate degree plans.' }
-                    ].map((resource, idx) => (
-                      <button
-                        key={idx}
+                    {resourceHubLinks.map((resource) => (
+                      <a
+                        key={resource.title}
+                        href={resource.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-left rounded-2xl border border-emerald-100 px-4 py-3 hover:border-emerald-300 transition-all bg-white/60"
                       >
                         <p className="font-semibold text-slate-800">{resource.title}</p>
                         <p className="text-sm text-slate-600">{resource.description}</p>
-                      </button>
+                      </a>
                     ))}
                   </div>
                 </div>

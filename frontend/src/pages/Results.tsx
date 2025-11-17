@@ -421,11 +421,7 @@ export default function ResultsPathway() {
             </div>
 
             {/* Right Panel - AI Chat */}
-            <div className="lg:col-span-2 flex flex-col gap-6 -mt-1 lg:-mt-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-emerald-500 mb-1">AI advisor</p>
-                <p className="text-sm text-slate-500">Check in with the Pathfinder bot for quick answers or next-step ideas while you browse.</p>
-              </div>
+            <div className="lg:col-span-2 flex flex-col gap-6 mt-8 lg:mt-17">
               <div className="relative">
                 {chatOpen ? (
                 <div className="bg-white rounded-3xl h-[600px] border border-emerald-100 shadow-xl flex flex-col">

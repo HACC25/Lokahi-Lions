@@ -1,25 +1,31 @@
 import { useState } from "react";
-import { Button } from "./src/components/ui/button";
-import { Input } from "./src/components/ui/input";
-import { Label } from "./src/components/ui/label";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
-interface SignInProps {
-  onNavigateToSignUp?: () => void;
-}
-
-export default function SignIn({ onNavigateToSignUp }: SignInProps) {
+export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign in
-    console.log("Sign in:", formData);
+
+    // Redirect to pathway upon successful login
+    const success = await login(email, password);
+    if (success) {
+      navigate("/pathway", { replace: true })
+    } else {
+      setMessage("Invalid email or password");
+    }
   };
 
   return (
@@ -34,10 +40,8 @@ export default function SignIn({ onNavigateToSignUp }: SignInProps) {
               id="email"
               type="email"
               placeholder="Enter your email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -47,11 +51,9 @@ export default function SignIn({ onNavigateToSignUp }: SignInProps) {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your passwordEnter your password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -69,12 +71,13 @@ export default function SignIn({ onNavigateToSignUp }: SignInProps) {
           >
             Sign In
           </Button>
+          {message && <p className="mt-3 text-muted">{message}</p>}
         </form>
 
         <p className="mt-6 text-center text-gray-600">
           Don't have an account?{" "}
           <button 
-            onClick={onNavigateToSignUp}
+            onClick={() => navigate("/signup")}
             className="text-indigo-600 hover:underline"
           >
             Sign up

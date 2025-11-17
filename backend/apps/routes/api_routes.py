@@ -105,17 +105,17 @@ def chat_route():
         return jsonify({"message": f"Error processing query: {str(e)}"}), 500
     
 
-@api_bp.route('/speech-to-text', methods=['POST'])
-def speech_to_text():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
+# @api_bp.route('/speech-to-text', methods=['POST'])
+# def speech_to_text():
+#     if 'file' not in request.files:
+#         return jsonify({'error': 'No file uploaded'}), 400
 
-    audio_file = request.files['file']
+#     audio_file = request.files['file']
 
-    # Example using OpenAI Whisper API
-    transcript = openai.audio.transcriptions.create(
-        model="whisper-1",
-        file=audio_file
-    )
+#     # Example using OpenAI Whisper API
+#     transcript = openai.audio.transcriptions.create(
+#         model="whisper-1",
+#         file=audio_file
+#     )
 
-    return jsonify({'text': transcript['text']})
+#     return jsonify({'text': transcript['text']})

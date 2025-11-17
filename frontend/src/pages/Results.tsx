@@ -437,7 +437,7 @@ export default function ResultsPathway() {
             </div>
 
             {/* Right Panel - AI Chat */}
-            <div className="lg:col-span-2 flex flex-col gap-6">
+            <div className="lg:col-span-2 flex flex-col gap-6 lg:mt-17">
               <div className="relative flex-1 flex flex-col">
                 {chatOpen ? (
                 <div className="bg-white rounded-3xl flex-1 min-h-[520px] border border-emerald-100 shadow-xl flex flex-col">

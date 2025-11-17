@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Gamepad2, PenSquare, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
+import SignOutModal from './page-signout';
+import { useNavigate } from 'react-router-dom';
 
 export default function ResultsPathway() {
+  const navigate = useNavigate();
   const [selectedPath, setSelectedPath] = useState(0);
   const [chatOpen, setChatOpen] = useState(true);
   const [expandedDetails, setExpandedDetails] = useState<number | null>(null);
@@ -14,6 +17,7 @@ export default function ResultsPathway() {
   const [actionPlanOpen, setActionPlanOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [modalPathIndex, setModalPathIndex] = useState<number | null>(null);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const educationalPaths = [
     {
@@ -119,7 +123,7 @@ export default function ResultsPathway() {
   };
 
   const handleSignOut = () => {
-    window.location.href = '/logout';
+    navigate('/');
   };
 
   const closeActionPlan = () => {
@@ -195,7 +199,7 @@ export default function ResultsPathway() {
                       <span>Profile &amp; Saved Careers</span>
                     </a>
                     <button
-                      onClick={handleSignOut}
+                      onClick={() => setShowSignOutModal(true)}
                       className="px-5 py-2.5 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-600 bg-white hover:bg-slate-50 transition-all shadow-sm"
                     >
                       Sign Out
@@ -668,6 +672,12 @@ export default function ResultsPathway() {
         </div>
       </div>
     )}
+
+    <SignOutModal
+      open={showSignOutModal}
+      onOpenChange={setShowSignOutModal}
+      onSignOut={handleSignOut}
+    />
 
     </>
   );

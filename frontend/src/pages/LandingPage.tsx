@@ -1,19 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [interests, setInterests] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [showResults, setShowResults] = useState(false);
-  const [animateResults, setAnimateResults] = useState(false);
-  const [email, setEmail] = useState('');
   const [scrollY, setScrollY] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
+  const [openStep, setOpenStep] = useState<number | null>(0); // 0 = first open, or null = all closed
+  const [whyVisible, setWhyVisible] = useState(false);
+  const whyRef = useRef<HTMLDivElement | null>(null);
+
+  const [faqVisible, setFaqVisible] = useState(false);
+  const faqRef = useRef<HTMLDivElement | null>(null);
 
   const handleLogin = () => {
     navigate("/login");
+  };
+
+  const handleSignup = () => {
+    navigate("/signup");
+  };
+
+  const handleScrollToGuide = () => {
+    const el = document.getElementById("guide");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   useEffect(() => {
@@ -22,52 +34,49 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const suggestedInterests = [
-    'Video Games', 'Climate Change', 'Music Production', 'Psychology',
-    'Space Exploration', 'Fashion', 'Robotics', 'Writing'
-  ];
+  useEffect(() => {
+    const section = whyRef.current;
+    if (!section) return;
+  
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setWhyVisible(true);
+            observer.disconnect(); // only animate once
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+  
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
-  const fieldDatabase: Record<string, { field: string; match: number; icon: string }> = {
-    'Video Games': { field: 'Game Design & Development', match: 95, icon: '🎮' },
-    'Climate Change': { field: 'Environmental Science', match: 92, icon: '🌍' },
-    'Music Production': { field: 'Audio Engineering', match: 94, icon: '🎵' },
-    'Psychology': { field: 'Clinical Psychology', match: 96, icon: '🧠' },
-    'Space Exploration': { field: 'Aerospace Engineering', match: 93, icon: '🚀' },
-    'Fashion': { field: 'Fashion Design & Marketing', match: 91, icon: '👗' },
-    'Robotics': { field: 'Robotics Engineering', match: 97, icon: '🤖' },
-    'Writing': { field: 'Creative Writing & Literature', match: 94, icon: '✍️' }
-  };
-
-  const addInterest = (interest: string) => {
-    if (!interests.includes(interest) && interests.length < 4) {
-      const newInterests = [...interests, interest];
-      setInterests(newInterests);
-      setInputValue('');
-      if (newInterests.length >= 2) {
-        setShowResults(true);
-        setTimeout(() => setAnimateResults(true), 100);
-      }
-    }
-  };
-
-  const removeInterest = (interest: string) => {
-    setInterests(interests.filter(i => i !== interest));
-    if (interests.length <= 2) {
-      setShowResults(false);
-      setAnimateResults(false);
-    }
-  };
-
-  const getRecommendations = () => {
-    return interests.map(interest => fieldDatabase[interest] || {
-      field: 'Computer Science',
-      match: 88,
-      icon: '💻'
-    });
-  };
+  useEffect(() => {
+    const section = faqRef.current;
+    if (!section) return;
+  
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setFaqVisible(true);
+            observer.disconnect(); // only animate once
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+  
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-900 text-white">
+
       {/* Floating background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-700 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse"></div>
@@ -82,8 +91,12 @@ export default function HomePage() {
             <Brain className="text-emerald-400" />
             <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">UH Pathfinder</span>
           </div>
-          <button type="submit" onClick={ handleLogin } className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105">
-            Log In
+          <button
+            type="button"
+            onClick={handleLogin}
+            className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105"
+          >
+            Sign In
           </button>
         </div>
       </nav>
@@ -97,154 +110,49 @@ export default function HomePage() {
               <span className="text-sm text-emerald-200">AI-Powered Career Discovery</span>
             </div>
             <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-              Find Your Perfect
-              <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent"> Field of Study</span>
+              Find your dream path with
+              <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent"> UH Pathfinder!</span>
             </h1>
-            <p className="text-xl text-slate-200 mb-8 leading-relaxed">
-              Our AI analyzes your interests, passions, and goals to match you with a personalized educational and career path
+            <p className="text-xl text-slate-200 mb-10 leading-relaxed">
+              Our AI analyzes your interests, skills, and experience to match you with careers and UH educational path that actually fits you. Get started now, or watch a quick walkthrough to see how it works!
             </p>
-          </div>
 
-          {/* Interactive Demo Card */}
-          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 transform hover:scale-[1.02] transition-all duration-500">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center">
-                <Zap className="text-white" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold">Try It Now</h3>
-                <p className="text-slate-300 text-sm">Add 2-4 interests to see your personalized matches</p>
-              </div>
+            {/* New hero buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <button
+                type="button"
+                onClick={handleSignup}
+                className="px-8 py-3 rounded-full bg-emerald-500 text-slate-950 font-semibold text-lg shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 hover:scale-105 transition-all duration-200"
+              >
+                Get Started
+              </button>
+              <button
+                type="button"
+                onClick={handleScrollToGuide}
+                className="px-8 py-3 rounded-full border border-white/20 bg-white/5 text-slate-50 font-semibold text-lg hover:bg-white/10 hover:border-emerald-400/60 hover:scale-105 transition-all duration-200 flex items-center gap-2"
+              >
+                <PlayCircle className="w-5 h-5" />
+                View walkthrough
+              </button>
             </div>
-
-            {/* Interest Input */}
-            <div className="mb-6">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {interests.map(interest => (
-                  <span
-                    key={interest}
-                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full flex items-center gap-2 animate-in fade-in slide-in-from-bottom-4 duration-300"
-                  >
-                    {interest}
-                    <button onClick={() => removeInterest(interest)} className="hover:text-red-300 transition-colors">
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-              
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && inputValue && addInterest(inputValue)}
-                placeholder="Type an interest and press Enter..."
-                className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all placeholder-slate-400"
-              />
-              
-              <div className="flex flex-wrap gap-2 mt-4">
-                {suggestedInterests.filter(s => !interests.includes(s)).slice(0, 8).map(suggestion => (
-                  <button
-                    key={suggestion}
-                    onClick={() => addInterest(suggestion)}
-                    disabled={interests.length >= 4}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    + {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Results */}
-            {showResults && (
-              <div className={`space-y-4 transition-all duration-700 ${animateResults ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="text-emerald-400 animate-pulse" />
-                  <h4 className="text-xl font-semibold">Your Personalized Matches</h4>
-                </div>
-                {getRecommendations().map((rec, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-gradient-to-r from-emerald-700/20 to-teal-700/20 backdrop-blur-sm p-6 rounded-2xl border border-white/20 hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02]"
-                    style={{animationDelay: `${idx * 100}ms`}}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex gap-4 flex-1">
-                        <div className="text-4xl">{rec.icon}</div>
-                        <div className="flex-1">
-                          <h5 className="text-xl font-semibold mb-2">{rec.field}</h5>
-                          <div className="flex items-center gap-2 text-sm text-slate-200">
-                            <div className="flex-1 bg-white/10 rounded-full h-2">
-                              <div 
-                                className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full rounded-full transition-all duration-1000"
-                                style={{width: `${rec.match}%`}}
-                              ></div>
-                            </div>
-                            <span className="font-semibold text-emerald-300">{rec.match}% Match</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                
-                {/* CTA after seeing results */}
-                <div className="mt-8 p-6 bg-gradient-to-r from-emerald-700 to-teal-700 rounded-2xl text-center">
-                  <h4 className="text-2xl font-bold mb-3">Want More Detailed Insights?</h4>
-                  <p className="mb-4 text-slate-100">Get career paths, salary projections, course recommendations & more</p>
-                  <div className="flex gap-3 max-w-md mx-auto">
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
-                      className="flex-1 px-4 py-3 rounded-xl bg-white/20 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white placeholder-white/60"
-                    />
-                    <button className="px-6 py-3 bg-white text-emerald-800 rounded-xl font-semibold hover:bg-slate-100 transition-all hover:scale-105 flex items-center gap-2 shadow-lg">
-                      Sign Up <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16">Why UH Pathfinder?</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { icon: Brain, title: 'Advanced AI Analysis', desc: 'Our AI provides personalized suggestions based on  your unique profile' },
-              { icon: BookOpen, title: '500+ Programs', desc: 'Access detailed information on programs across all of the UH campuses' },
-              { icon: TrendingUp, title: 'Career Insights', desc: 'See salary projections, job growth, and career paths for each field' },
-            ].map((feature, idx) => (
-              <div key={idx} className="group p-8 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 hover:border-emerald-500/50 transition-all duration-300 hover:scale-105 hover:bg-white/10">
-                <feature.icon className="w-12 h-12 text-emerald-400 mb-4 group-hover:scale-110 transition-transform" />
-                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-slate-300">{feature.desc}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* User Guide Section */}
-      <section className="py-20 px-6 bg-white/5 backdrop-blur-sm">
+      <section id="guide" className="py-20 px-6 bg-white/5 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/20 rounded-full mb-4 backdrop-blur-sm">
               <HelpCircle className="w-4 h-4 text-emerald-300" />
               <span className="text-sm text-emerald-200">Quick Start Guide</span>
             </div>
-            <h2 className="text-4xl font-bold mb-4">How to Navigate UH Pathfinder</h2>
+            <h2 className="text-4xl font-bold mb-4">How to navigate UH Pathfinder</h2>
             <p className="text-xl text-slate-200">Get started in 3 simple steps</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start">
+
             {/* Video Tutorial */}
             <div className="relative">
               <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden hover:border-emerald-500/50 transition-all duration-300">
@@ -287,114 +195,164 @@ export default function HomePage() {
               {[
                 {
                   step: '1',
-                  title: 'Enter Your Interests',
-                  desc: 'Type in 2-4 things you\'re passionate about. Be specific! Instead of "science," try "marine biology" or "climate research."'
+                  title: 'Tell us about yourself',
+                  desc: 'When you sign up, pick your interests, skills, experiences, student status (e.g., incoming, undergraduate, transfer), and your UH campus. This helps UH Pathfinder personalize your results.'
                 },
                 {
                   step: '2',
-                  title: 'Review AI Matches',
-                  desc: 'Our AI instantly analyzes thousands of programs and shows you the best matches with compatibility scores and career paths.'
+                  title: 'Explore your AI-matched careers',
+                  desc: 'Our AI uses your answers to suggest careers or specific jobs, along with related UH majors and example paths you could take next.'
                 },
                 {
                   step: '3',
-                  title: 'Explore & Save',
-                  desc: 'Click on any program to see detailed info: course requirements, job prospects, salaries, and student reviews. Save your favorites!'
-                },
-                {
-                  step: '4',
-                  title: 'Refine Your Search',
-                  desc: 'Add filters like location, program length, or salary expectations. The AI adapts to give you even better recommendations.'
+                  title: 'Ask questions & plan your next steps',
+                  desc: 'Chat with the AI assistant like you would in an advising appointment — ask about classes, jot down notes, and use what you learn to prepare for your real advising appointment.'
                 }
-              ].map((item, idx) => (
-                <div 
-                  key={idx}
-                  className="flex gap-4 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hover:border-emerald-500/50 transition-all duration-300 hover:scale-[1.02]"
-                >
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center font-bold text-xl">
-                    {item.step}
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold mb-2">{item.title}</h4>
-                    <p className="text-slate-300 text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
+              ].map((item, idx) => {
+                const isOpen = openStep === idx;
 
+                return (
+                  <div
+                    key={idx}
+                    className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hover:border-emerald-500/50 transition-all duration-300"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenStep(isOpen ? null : idx)}
+                      className="w-full flex items-center gap-4 text-left"
+                    >
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center font-bold text-xl">
+                        {item.step}
+                      </div>
+
+                      <div className="flex-1 flex items-center justify-between gap-4">
+                        <h4 className="text-lg font-bold">{item.title}</h4>
+                        {isOpen ? (
+                          <ChevronUp className="w-5 h-5 text-emerald-300" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-emerald-300" />
+                        )}
+                      </div>
+                    </button>
+
+                    {isOpen && (
+                      <p className="mt-3 ml-16 text-slate-300 text-sm leading-relaxed">
+                        {item.desc}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* FAQ Quick Links */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              'Getting Started',
-              'Understanding Results',
-              'Saving Favorites',
-              'Contact Support'
-            ].map((item, idx) => (
-              <button
-                key={idx}
-                className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-emerald-500/50 rounded-xl transition-all text-sm font-medium"
-              >
-                {item} →
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+          {/* Features */}
+          <div className="h-px w-full bg-white/15 mt-16 mb-10" />
+          <section id="why" ref={whyRef} className="py-20 px-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-10 flex items-center justify-between gap-4">
+                <h2 className="text-4xl font-bold">Why UH Pathfinder?</h2>
+                <p className="text-sm text-slate-300">
+                  What makes this different from a random career quiz
+                </p>
+              </div>
 
-      {/* Social Proof */}
-      <section className="py-20 px-6 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-8 mb-8">
-              <div>
-                <div className="text-4xl font-bold text-emerald-400">50K+</div>
-                <div className="text-slate-300">Students Matched</div>
-              </div>
-              <div className="h-16 w-px bg-white/20"></div>
-              <div>
-                <div className="text-4xl font-bold text-emerald-400">94%</div>
-                <div className="text-slate-300">Satisfaction Rate</div>
-              </div>
-              <div className="h-16 w-px bg-white/20"></div>
-              <div>
-                <div className="text-4xl font-bold text-emerald-400">200+</div>
-                <div className="text-slate-300">Universities</div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {[
+                  {
+                    title: 'Built around UH, not generic advice',
+                    desc: 'UH Pathfinder uses UH campuses, programs, and language you actually see on STAR and in advising – so your results feel more concrete and realistic.'
+                  },
+                  {
+                    title: 'Designed with student + advisor feedback',
+                    desc: 'The questions, flow, and features are shaped by what UH students say they struggle with and what advisors see in appointments.'
+                  },
+                  {
+                    title: 'Helps you get unstuck, not decide everything',
+                    desc: 'Instead of forcing you into one “perfect” career, UH Pathfinder focuses on making options visible and easier to talk about.'
+                  },
+                  {
+                    title: 'Meant to work with advising, not replace it',
+                    desc: 'Think of this as a starting point. It helps you show up to advising with more clarity and questions, not less.'
+                  }
+                ].map((item, idx) => (
+                  <div
+                    key={item.title}
+                    className={`p-6 md:p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-lg transition-all duration-700 ${
+                      whyVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                    }`}
+                    style={{ transitionDelay: whyVisible ? `${idx * 120}ms` : '0ms' }}
+                  >
+                    <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: 'Sarah M.', program: 'Environmental Science', quote: 'Found my dream program in minutes. The AI understood exactly what I was looking for!' },
-              { name: 'James K.', program: 'Game Design', quote: 'I had no idea what to study. StudyPath showed me options I never considered.' },
-              { name: 'Priya S.', program: 'Bioengineering', quote: 'The career insights helped me make a confident decision about my future.' },
-            ].map((testimonial, idx) => (
-              <div key={idx} className="p-6 bg-white/10 rounded-2xl border border-white/20">
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400">★</span>
-                  ))}
-                </div>
-                <p className="mb-4 text-slate-200 italic">"{testimonial.quote}"</p>
-                <div>
-                  <div className="font-semibold">{testimonial.name}</div>
-                  <div className="text-sm text-emerald-300">Now studying {testimonial.program}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {/* Final CTA */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-5xl font-bold mb-6">Ready to Discover Your Path?</h2>
-          <p className="text-xl text-slate-200 mb-8">Join thousands of students finding their perfect field of study</p>
-          <button className="px-10 py-5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl font-bold text-lg hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-emerald-600/50 flex items-center gap-3 mx-auto">
-            Get Started Free <ArrowRight />
-          </button>
+          {/* FAQ Section */}
+          <section
+            id="faq"
+            ref={faqRef}
+            className="py-20 px-6 border-t border-white/10"
+          >
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-10 flex items-center justify-between gap-4">
+                <h2 className="text-4xl font-bold">Frequently Asked Questions</h2>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    q: 'What is UH Pathfinder?',
+                    a: 'UH Pathfinder is an AI-powered tool that helps UH students connect their interests, skills, and experiences to possible careers and UH majors, then plan next steps they can talk about in advising.'
+                  },
+                  {
+                    q: 'Is UH Pathfinder an official UH tool?',
+                    a: 'Right now, UH Pathfinder is a student-created project designed to support UH students and advising. It does not replace official UH systems like STAR or your campus advising office.'
+                  },
+                  {
+                    q: 'Do I need to know my major or career already?',
+                    a: 'Nope. UH Pathfinder is especially helpful if you\'re unsure. You can start with what you\'re curious about, and the AI will suggest careers and paths you might not have considered yet.'
+                  },
+                  {
+                    q: 'How do I sign up and who can use it?',
+                    a: 'Any UH student can create an account with their email and choose their campus and student status (incoming, undergraduate, transfer, etc.). The experience is tailored around UH programs and terminology.'
+                  },
+                  {
+                    q: 'Will this replace meeting with an advisor?',
+                    a: 'No. UH Pathfinder is meant to help you show up to advising more prepared — with saved careers, questions, and notes — so your conversation with an advisor is more focused and useful.'
+                  }
+                ].map((item, idx) => (
+                  <div
+                    key={item.q}
+                    className={`rounded-2xl bg-white/5 border border-white/10 p-6 md:p-7 transition-all duration-700 ${
+                      faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+                    }`}
+                    style={{ transitionDelay: faqVisible ? `${idx * 120}ms` : '0ms' }}
+                  >
+                    <p className="font-semibold text-lg mb-2">{item.q}</p>
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                      {item.a}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer className="mt-10 border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-400">
+              <span>UH Pathfinder · Beta</span>
+              <div className="flex flex-wrap items-center gap-4">
+                <span>Made by students @ UH Mānoa</span>
+              </div>
+            </div>
+          </footer>
         </div>
       </section>
     </div>

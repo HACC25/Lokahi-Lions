@@ -484,7 +484,7 @@ export default function ResultsPathway() {
                         className="flex-1 px-5 py-3 bg-white border border-emerald-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-300 text-sm placeholder-slate-400"
                       />
                       <button 
-                        onClick={handleSendMessage}
+                        onKeyDown={handleSendMessage}
                         className="px-5 py-3 bg-gradient-to-r from-emerald-500 to-lime-400 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-200 transition-all hover:scale-105"
                       >
                         <Send className="w-5 h-5" />

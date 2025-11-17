@@ -118,44 +118,44 @@ const handleSendMessage = async () => {
   }
 };
 
-// mic recording functions
-const startRecording = async () => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const mediaRecorder = new MediaRecorder(stream);
-  mediaRecorderRef.current = mediaRecorder;
-  audioChunksRef.current = [];
+// // mic recording functions
+// const startRecording = async () => {
+//   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//   const mediaRecorder = new MediaRecorder(stream);
+//   mediaRecorderRef.current = mediaRecorder;
+//   audioChunksRef.current = [];
 
-  mediaRecorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
-  mediaRecorder.onstop = async () => {
-    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+//   mediaRecorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+//   mediaRecorder.onstop = async () => {
+//     const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
 
-    // Send to your speech-to-text API
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'audio.wav');
+//     // Send to your speech-to-text API
+//     const formData = new FormData();
+//     formData.append('file', audioBlob, 'audio.wav');
 
-    try {
-      const res = await fetch('http://localhost:5000/api/speech-to-text', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      const transcript = data.text;
+//     try {
+//       const res = await fetch('http://localhost:5000/api/speech-to-text', {
+//         method: 'POST',
+//         body: formData,
+//       });
+//       const data = await res.json();
+//       const transcript = data.text;
 
-      setInputMessage(transcript); // Put transcript in input box
-      handleSendMessage(); // Optionally send immediately
-    } catch (error) {
-      console.error('Speech-to-text error:', error);
-    }
-  };
+//       setInputMessage(transcript); // Put transcript in input box
+//       handleSendMessage(); // Optionally send immediately
+//     } catch (error) {
+//       console.error('Speech-to-text error:', error);
+//     }
+//   };
 
-  mediaRecorder.start();
-  setRecording(true);
-};
+//   mediaRecorder.start();
+//   setRecording(true);
+// };
 
-const stopRecording = () => {
-  mediaRecorderRef.current?.stop();
-  setRecording(false);
-};
+// const stopRecording = () => {
+//   mediaRecorderRef.current?.stop();
+//   setRecording(false);
+// };
 
   const currentPath = educationalPaths[selectedPath];
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Brain, Sparkles, TrendingUp, DollarSign, BookOpen, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, Clock, Award, Briefcase, MapPin, Users, Target, Lightbulb } from 'lucide-react';
 
 export default function ResultsPathway() {
@@ -10,6 +10,10 @@ export default function ResultsPathway() {
   const [inputMessage, setInputMessage] = useState('');
 
   const userInterests = ['Video Games', 'Psychology', 'Writing'];
+
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const educationalPaths = [
     {
@@ -112,6 +116,45 @@ const handleSendMessage = async () => {
       { role: "assistant", content: "⚠️ Error connecting to chatbot." }
     ]);
   }
+};
+
+// mic recording functions
+const startRecording = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const mediaRecorder = new MediaRecorder(stream);
+  mediaRecorderRef.current = mediaRecorder;
+  audioChunksRef.current = [];
+
+  mediaRecorder.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+  mediaRecorder.onstop = async () => {
+    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+
+    // Send to your speech-to-text API
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.wav');
+
+    try {
+      const res = await fetch('http://localhost:5000/api/speech-to-text', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      const transcript = data.text;
+
+      setInputMessage(transcript); // Put transcript in input box
+      handleSendMessage(); // Optionally send immediately
+    } catch (error) {
+      console.error('Speech-to-text error:', error);
+    }
+  };
+
+  mediaRecorder.start();
+  setRecording(true);
+};
+
+const stopRecording = () => {
+  mediaRecorderRef.current?.stop();
+  setRecording(false);
 };
 
   const currentPath = educationalPaths[selectedPath];
@@ -379,6 +422,17 @@ const handleSendMessage = async () => {
                 placeholder="Ask me anything about UH programs..."
                 className="flex-1 px-5 py-3 bg-white/5 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm placeholder-slate-400"
               />
+
+              {/* Mic Button */}
+              <button
+                onClick={recording ? stopRecording : startRecording}
+                className={`px-4 py-3 rounded-xl transition-all ${
+                  recording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-600 hover:bg-teal-600'
+                }`}
+              >
+                {recording ? 'Stop' : '🎤'}
+              </button>
+
               <button 
                 onClick={handleSendMessage}
                 className="px-5 py-3 bg-gradient-to-r from-green-600 to-teal-600 rounded-xl hover:shadow-lg hover:shadow-green-600/50 transition-all hover:scale-105"

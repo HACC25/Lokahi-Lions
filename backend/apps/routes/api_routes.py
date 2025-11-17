@@ -16,7 +16,7 @@ PORT = os.getenv("port")
 DBNAME = os.getenv("dbname")
 
 # Connect to supabase database
-DATABASE_URL: str = os.getenv("SUPABASE_URL")
+DATABASE_URL: str = os.getenv("DATABASE_URL")
 #DATABASE_URL = f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}"
 
 # Publishable supabase key
@@ -103,3 +103,19 @@ def chat_route():
         return jsonify({"response": response_text}), 200
     except Exception as e:
         return jsonify({"message": f"Error processing query: {str(e)}"}), 500
+    
+
+@api_bp.route('/speech-to-text', methods=['POST'])
+def speech_to_text():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+
+    audio_file = request.files['file']
+
+    # Example using OpenAI Whisper API
+    transcript = openai.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file
+    )
+
+    return jsonify({'text': transcript['text']})

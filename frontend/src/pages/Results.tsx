@@ -480,7 +480,7 @@ useEffect(() => {
                   <div className="mb-4">
                     <p className="text-xs uppercase tracking-[0.35em] text-emerald-500">Resource hub</p>
                     <p className="text-sm text-slate-600 mt-1">
-                      Use these UH tools to chat with advisors and experiment with possible journeys before committing to a pathway.
+                      Use this UH tool to chat with advisors and experiment with possible journeys before committing to a pathway.
                     </p>
                   </div>
                   <div className="grid gap-3">

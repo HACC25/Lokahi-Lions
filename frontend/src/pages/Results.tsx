@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Gamepad2, PenSquare, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
+import { educationalPaths } from '../../../backend/apps/services/educationalPaths';
 
 export default function ResultsPathway() {
   const [selectedPath, setSelectedPath] = useState(0);
@@ -10,17 +11,109 @@ export default function ResultsPathway() {
   const [chatMessages, setChatMessages] = useState([
     { role: 'assistant', content: 'Aloha! I\'m your UH Pathfinder AI advisor. I can help you explore degree programs, compare campuses, understand career outcomes, and plan your educational journey. What would you like to discover?' }
   ]);
+  
   const [inputMessage, setInputMessage] = useState('');
   const [actionPlanOpen, setActionPlanOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [modalPathIndex, setModalPathIndex] = useState<number | null>(null);
+  const [eduPaths, setEduPaths] = useState<EducationalPath[]>([]);
+  type EducationalPath = {
+  field: string;
+  match: number;
+  uhCampus: string;
+  degree: string;
+  description: string;
+  duration: string;
+  avgSalary: string;
+  jobGrowth: string;
+  topCareers: {
+    title: string;
+    salary: string;
+    demand: string;
+    companies: string[];
+  }[];
+  uhPrograms: {
+    name: string;
+    campus: string;
+    type: string;
+  }[];
+  keySkills: string[];
+  nextSteps: string[];
+};
+
+
+// Define the required JSON schema structure for the LLM output.
+// This enforces the model to return data compatible with the user's original array shape.
+const pathSchema = {
+  type: "ARRAY",
+  items: {
+    type: "OBJECT",
+    properties: {
+      "field": { "type": "STRING", "description": "The name of the educational/career field." },
+      "match": { "type": "NUMBER", "description": "A percentage match score (0-100)." },
+      "gradient": { "type": "STRING", "description": "A Tailwind CSS gradient class string (e.g., 'from-blue-200 via-indigo-100 to-indigo-50')." },
+      "uhCampus": { "type": "STRING", "description": "A suggested campus for the field." },
+      "degree": { "type": "STRING", "description": "The suggested degree title." },
+      "description": { "type": "STRING", "description": "A brief, exciting description of the path." },
+      "duration": { "type": "STRING" },
+      "avgSalary": { "type": "STRING" },
+      "jobGrowth": { "type": "STRING" },
+      "topCareers": {
+        "type": "ARRAY",
+        "items": {
+          "type": "OBJECT",
+          "properties": {
+            "title": { "type": "STRING" },
+            "salary": { "type": "STRING" },
+            "demand": { "type": "STRING" },
+            "companies": { "type": "ARRAY", "items": { "type": "STRING" } }
+          },
+          "required": ["title", "salary", "demand", "companies"]
+        }
+      },
+      "uhPrograms": {
+        "type": "ARRAY",
+        "items": {
+          "type": "OBJECT",
+          "properties": {
+            "name": { "type": "STRING" },
+            "campus": { "type": "STRING" },
+            "type": { "type": "STRING" }
+          },
+          "required": ["name", "campus", "type"]
+        }
+      },
+      "keySkills": { "type": "ARRAY", "items": { "type": "STRING" } },
+      "nextSteps": { "type": "ARRAY", "items": { "type": "STRING" } }
+    },
+    "required": ["field", "match", "uhCampus", "degree", "description", "duration", "avgSalary", "jobGrowth", "topCareers", "uhPrograms", "keySkills", "nextSteps"]
+  }
+};
+
+const userProfile = {
+  interests: ["Game Design", "Psychology", "Interactive Media"],
+  goals: ["High salary", "Creative work", "Remote options"]
+};
+
+
+useEffect(() => {
+  async function loadPaths() {
+    try {
+      const res = await fetch("/http://localhost:5000/api/ai-paths");
+      const data = await res.json();
+      setEduPaths(data);
+    } catch (err) {
+      console.error("Failed to load educational paths:", err);
+    }
+  }
+  loadPaths();
+}, []);
+
 
   const educationalPaths = [
     {
       field: 'Game Design & Development',
       match: 97,
-      icon: Gamepad2,
-      gradient: 'from-emerald-200 via-emerald-100 to-green-50',
       uhCampus: 'UH Mānoa',
       degree: 'B.A. in Creative Media',
       description: 'Combine creativity with technical skills to design engaging interactive experiences through UH\'s interdisciplinary approach',
@@ -43,8 +136,6 @@ export default function ResultsPathway() {
     {
       field: 'Psychology with Game Studies',
       match: 94,
-      icon: Brain,
-      gradient: 'from-lime-100 via-emerald-50 to-green-50',
       uhCampus: 'UH Mānoa',
       degree: 'B.A. in Psychology',
       description: 'Study human behavior and apply insights to user experience and game design with UH\'s research-focused curriculum',
@@ -67,8 +158,6 @@ export default function ResultsPathway() {
     {
       field: 'Interactive Media & Narrative Design',
       match: 92,
-      icon: PenSquare,
-      gradient: 'from-emerald-100 via-green-100 to-lime-50',
       uhCampus: 'UH Mānoa',
       degree: 'B.A. in English/Creative Media',
       description: 'Craft compelling stories and narratives for games, interactive media, and digital experiences with UH\'s creative writing focus',
@@ -90,7 +179,10 @@ export default function ResultsPathway() {
     }
   ];
 
-  const activeModalPath = modalPathIndex !== null ? educationalPaths[modalPathIndex] : null;
+
+
+
+  const activeModalPath = modalPathIndex !== null ? eduPaths[modalPathIndex] : null;
 
   const openActionPlan = (pathIndex: number) => {
     setModalPathIndex(pathIndex);
@@ -104,15 +196,22 @@ export default function ResultsPathway() {
     setCompareModalOpen(true);
   };
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-    
-    setChatMessages([...chatMessages, 
-      { role: 'user', content: inputMessage },
-      { role: 'assistant', content: 'That\'s a great question! Based on your interests in ' + userInterests.join(', ') + ', I can help you explore UH programs that blend these areas. Would you like to learn about specific campuses, scholarship opportunities, or hear from current students in these fields?' }
-    ]);
-    setInputMessage('');
-  };
+  const handleSendMessage = async () => {
+  if (!inputMessage.trim()) return;
+
+  setChatMessages(prev => [...prev, { role: 'user', content: inputMessage }]);
+
+  const res = await fetch("https://your-backend-url/api/chat", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ message: inputMessage })
+  });
+
+  const data = await res.json();
+
+  setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+  setInputMessage('');
+};
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     setCursorPosition({ x: event.clientX, y: event.clientY });
@@ -180,7 +279,7 @@ export default function ResultsPathway() {
           {/* Enhanced Results Header */}
           <div className="mb-12">
             <div className="flex flex-wrap items-center justify-between gap-6 mb-6 relative">
-              <div className="absolute inset-x-0 -top-6 h-32 bg-gradient-to-r from-emerald-200/50 via-transparent to-emerald-200/50 blur-3xl rounded-full pointer-events-none"></div>
+
               <div className="flex-1">
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                   <p className="text-sm font-semibold tracking-[0.35em] text-emerald-500 uppercase">
@@ -223,10 +322,9 @@ export default function ResultsPathway() {
                 </h3>
                 <span className="text-sm text-slate-500">{educationalPaths.length} paths found</span>
               </div>
-
               <div className="space-y-6">
                 {educationalPaths.map((path, idx) => {
-                  const Icon = path.icon;
+
                   const cardIsActive = selectedPath === idx;
                   const cardIsHovered = hoveredPath === idx;
                   return (
@@ -251,7 +349,6 @@ export default function ResultsPathway() {
                     >
                       <div className="flex items-start gap-3">
                         <div className={`p-3 rounded-2xl border ${cardIsActive ? 'bg-white/60 border-white/80' : 'bg-emerald-50 border-emerald-100'}`}>
-                          <Icon className={`w-6 h-6 ${cardIsActive ? 'text-emerald-700' : 'text-slate-500'}`} />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-2">

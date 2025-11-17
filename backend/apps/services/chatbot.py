@@ -183,5 +183,6 @@ def main():
             print(f"\n❌ Error: {e}\n")
             print("Please try rephrasing your question.\n")
 
-if __name__ == "__main__":
-    main()
+#cli loop
+# if __name__ == "__main__":
+#     main()

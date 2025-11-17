@@ -86,15 +86,33 @@ export default function ResultsPathway() {
     }
   ];
 
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-    
-    setChatMessages([...chatMessages, 
-      { role: 'user', content: inputMessage },
-      { role: 'assistant', content: 'That\'s a great question! Based on your interests in ' + userInterests.join(', ') + ', I can help you explore UH programs that blend these areas. Would you like to learn about specific campuses, scholarship opportunities, or hear from current students in these fields?' }
+const handleSendMessage = async () => {
+  if (!inputMessage.trim()) return;
+
+  const userMessage = inputMessage;
+
+  // Add user message to UI immediately
+  setChatMessages(prev => [...prev, { role: "user", content: userMessage }]);
+  setInputMessage("");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage }),
+    });
+
+    const data = await res.json();
+
+    // Add chatbot response
+    setChatMessages(prev => [...prev, { role: "assistant", content: data.response }]);
+  } catch (error) {
+    setChatMessages(prev => [
+      ...prev,
+      { role: "assistant", content: "⚠️ Error connecting to chatbot." }
     ]);
-    setInputMessage('');
-  };
+  }
+};
 
   const currentPath = educationalPaths[selectedPath];
 

@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 import os
 import time
+from backend.apps.services.chatbot import chat
 
 # Load environment variables from .env
 load_dotenv()
@@ -15,7 +16,7 @@ PORT = os.getenv("port")
 DBNAME = os.getenv("dbname")
 
 # Connect to supabase database
-DATABASE_URL: str = os.getenv("DATABASE_URL")
+DATABASE_URL: str = os.getenv("SUPABASE_URL")
 #DATABASE_URL = f"postgres://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}"
 
 # Publishable supabase key
@@ -83,3 +84,22 @@ def login():
         return jsonify({"message": "Login successful", "loginAttempt": "success"}), 200
     return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
     
+# Chatbot route
+@api_bp.route('/chat', methods=['POST', 'OPTIONS'])
+def chat_route():
+    if request.method == "OPTIONS":
+        return "", 200 # CORS preflight
+    if not request.is_json:
+        return jsonify({"message": "Request must be JSON"}), 400
+    
+    data = request.get_json()
+    user_query = data.get('message')
+    if not user_query:
+        return jsonify({"message": "Query is required"}), 400
+    
+    # Get chatbot response
+    try:
+        response_text = chat(user_query)
+        return jsonify({"response": response_text}), 200
+    except Exception as e:
+        return jsonify({"message": f"Error processing query: {str(e)}"}), 500

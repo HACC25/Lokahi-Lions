@@ -85,24 +85,24 @@ def login():
     return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
     
 # Chatbot route
-# @api_bp.route('/chat', methods=['POST', 'OPTIONS'])
-# def chat_route():
-#     if request.method == "OPTIONS":
-#         return "", 200 # CORS preflight
-#     if not request.is_json:
-#         return jsonify({"message": "Request must be JSON"}), 400
+@api_bp.route('/chat', methods=['POST', 'OPTIONS'])
+def chat_route():
+    if request.method == "OPTIONS":
+        return "", 200 # CORS preflight
+    if not request.is_json:
+        return jsonify({"message": "Request must be JSON"}), 400
     
-#     data = request.get_json()
-#     user_query = data.get('message')
-#     if not user_query:
-#         return jsonify({"message": "Query is required"}), 400
+    data = request.get_json()
+    user_query = data.get('message')
+    if not user_query:
+        return jsonify({"message": "Query is required"}), 400
     
-#     # Get chatbot response
-#     try:
-#         response_text = chat(user_query)
-#         return jsonify({"response": response_text}), 200
-#     except Exception as e:
-#         return jsonify({"message": f"Error processing query: {str(e)}"}), 500
+    # Get chatbot response
+    try:
+        response_text = chat(user_query)
+        return jsonify({"response": response_text}), 200
+    except Exception as e:
+        return jsonify({"message": f"Error processing query: {str(e)}"}), 500
     
 
 # @api_bp.route('/speech-to-text', methods=['POST'])

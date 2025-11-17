@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { signupUser } from "../services/api";
 import '../styles/input.css';
+import React from "react";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");

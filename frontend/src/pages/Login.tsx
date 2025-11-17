@@ -2,6 +2,7 @@ import { useState } from "react";
 import '../styles/input.css';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import React from "react";
 
 export default function LoginForm() {
   const navigate = useNavigate();

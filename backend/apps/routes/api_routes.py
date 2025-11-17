@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 import os
 import time
-from backend.apps.services.chatbot import chat
+from apps.services.chatbot import chat
 
 # Load environment variables from .env
 load_dotenv()

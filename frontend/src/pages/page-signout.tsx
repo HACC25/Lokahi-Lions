@@ -20,8 +20,8 @@ export default function SignOutModal({
   onSignOut,
 }: SignOutModalProps) {
   return (
-    <DialogTitle>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTitle>
         <DialogContent className="max-w-md rounded-3xl border border-gray-200 bg-white shadow-2xl px-10 py-8">
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-semibold">
@@ -43,7 +43,7 @@ export default function SignOutModal({
             </Button>
           </div>
         </DialogContent>
-      </Dialog>
-    </DialogTitle>
+      </DialogTitle>
+    </Dialog>
   );
 }

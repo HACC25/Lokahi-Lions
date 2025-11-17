@@ -9,9 +9,7 @@ export default function SignOutPage() {
 
   useEffect(() => {
     logout();
-    const timer = setTimeout(() => navigate("/", { replace: true }), 2500);
-    return () => clearTimeout(timer);
-  }, [logout, navigate]);
+  }, [logout]);
 
   return (
     <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9] flex items-center justify-center px-6">

@@ -429,7 +429,7 @@ export default function SignUp() {
 
 
   return (
-    <div className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
+    <div className="min-h-screen text-slate-900 relative bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-12 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40"></div>
         <div className="absolute top-1/3 right-12 w-80 h-80 bg-emerald-100 rounded-full blur-3xl opacity-35"></div>

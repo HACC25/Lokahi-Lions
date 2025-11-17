@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Gamepad2, PenSquare, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
-import SignOutModal from './page-signout';
 import { useNavigate } from 'react-router-dom';
 
 export default function ResultsPathway() {
@@ -17,9 +16,7 @@ export default function ResultsPathway() {
   const [actionPlanOpen, setActionPlanOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [modalPathIndex, setModalPathIndex] = useState<number | null>(null);
-  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const starBalanceUrl = import.meta.env.VITE_STAR_BALANCE_URL || "#";
-  const starWhatIfUrl = import.meta.env.VITE_STAR_WHAT_IF_URL || "#";
 
   const resourceHubLinks = [
     {
@@ -138,7 +135,7 @@ export default function ResultsPathway() {
   };
 
   const handleSignOut = () => {
-    navigate('/');
+    navigate('/logout');
   };
 
   const closeActionPlan = () => {
@@ -160,7 +157,7 @@ export default function ResultsPathway() {
   return (
     <>
     <div 
-      className="min-h-screen text-slate-900 relative overflow-hidden"
+      className="min-h-screen text-slate-900 relative overflow-hidden flex flex-col"
       onMouseMove={handleMouseMove}
     >
       {/* Futuristic ambient background */}
@@ -194,7 +191,7 @@ export default function ResultsPathway() {
         }}
       ></div>
 
-      <div className="pt-16 px-8 pb-16">
+      <div className="pt-16 px-8 pb-10">
         <div className="max-w-[1800px] mx-auto">
           {/* Enhanced Results Header */}
           <div className="mb-12">
@@ -214,7 +211,7 @@ export default function ResultsPathway() {
                       <span>Profile &amp; Saved Careers</span>
                     </a>
                     <button
-                      onClick={() => setShowSignOutModal(true)}
+                      onClick={handleSignOut}
                       className="px-5 py-2.5 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-600 bg-white hover:bg-slate-50 transition-all shadow-sm"
                     >
                       Sign Out
@@ -232,9 +229,9 @@ export default function ResultsPathway() {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid lg:grid-cols-5 gap-8">
+          <div className="grid lg:grid-cols-5 gap-8 items-stretch">
             {/* Left Panel with integrated pathways */}
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-3 flex flex-col space-y-6">
               <div className="mb-2">
                 <h3 className="text-2xl font-bold flex items-center gap-2 mb-1 text-emerald-700">
                   <GraduationCap className="text-emerald-500 w-7 h-7" />
@@ -440,10 +437,10 @@ export default function ResultsPathway() {
             </div>
 
             {/* Right Panel - AI Chat */}
-            <div className="lg:col-span-2 flex flex-col gap-6 mt-8 lg:mt-17">
-              <div className="relative">
+            <div className="lg:col-span-2 flex flex-col gap-6">
+              <div className="relative flex-1 flex flex-col">
                 {chatOpen ? (
-                <div className="bg-white rounded-3xl h-[600px] border border-emerald-100 shadow-xl flex flex-col">
+                <div className="bg-white rounded-3xl flex-1 min-h-[520px] border border-emerald-100 shadow-xl flex flex-col">
                   <div className="bg-gradient-to-r from-emerald-200 via-green-100 to-lime-100 p-6 rounded-t-3xl flex items-center justify-between text-emerald-900">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
@@ -505,7 +502,7 @@ export default function ResultsPathway() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white border border-emerald-100 rounded-3xl h-full flex flex-col items-center justify-center text-center p-8 shadow-sm">
+                <div className="bg-white border border-emerald-100 rounded-3xl flex-1 flex flex-col items-center justify-center text-center p-8 shadow-sm">
                   <MessageSquare className="w-12 h-12 text-emerald-500 mb-4" />
                   <p className="text-lg font-semibold mb-2 text-slate-900">Need help planning?</p>
                   <p className="text-slate-600 mb-6">Open the UH Pathfinder AI advisor to ask questions and explore your next steps together.</p>
@@ -519,7 +516,7 @@ export default function ResultsPathway() {
               )}
               </div>
 
-              <div className="grid gap-4">
+              <div className="grid gap-4 mt-4">
                 <div className="bg-white border border-emerald-100 rounded-3xl p-6 shadow-sm">
                   <div className="mb-4">
                     <p className="text-xs uppercase tracking-[0.35em] text-emerald-500">Resource hub</p>
@@ -687,12 +684,6 @@ export default function ResultsPathway() {
         </div>
       </div>
     )}
-
-    <SignOutModal
-      open={showSignOutModal}
-      onOpenChange={setShowSignOutModal}
-      onSignOut={handleSignOut}
-    />
 
     </>
   );

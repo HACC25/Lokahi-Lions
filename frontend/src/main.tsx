@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { AuthProvider } from "./auth/AuthContext.tsx";
 import HomePage from './pages/LandingPage.tsx'
 import ResultsPathway from './pages/Results.tsx'
@@ -23,13 +22,7 @@ ReactDOM.createRoot(rootElement).render(
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/login" element={<LoginForm />} />
-          <Route path="/pathway" 
-            element={
-            <ProtectedRoute>
-              <ResultsPathway />
-            </ProtectedRoute>
-            } 
-          />
+          <Route path="/pathway" element={<ResultsPathway />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -95,7 +95,6 @@ const userProfile = {
   goals: ["High salary", "Creative work", "Remote options"]
 };
 
-
 useEffect(() => {
   async function loadPaths() {
     try {
@@ -108,79 +107,6 @@ useEffect(() => {
   }
   loadPaths();
 }, []);
-
-
-  const educationalPaths = [
-    {
-      field: 'Game Design & Development',
-      match: 97,
-      uhCampus: 'UH Mānoa',
-      degree: 'B.A. in Creative Media',
-      description: 'Combine creativity with technical skills to design engaging interactive experiences through UH\'s interdisciplinary approach',
-      duration: '4 years',
-      avgSalary: '$85,000',
-      jobGrowth: '+23%',
-      topCareers: [
-        { title: 'Game Designer', salary: '$75,000-$120,000', demand: 'High', companies: ['Epic Games', 'Blizzard', 'Riot Games'] },
-        { title: 'UX Designer', salary: '$80,000-$130,000', demand: 'Very High', companies: ['Google', 'Meta', 'Apple'] },
-        { title: 'Level Designer', salary: '$70,000-$110,000', demand: 'High', companies: ['Ubisoft', 'EA', 'Valve'] }
-      ],
-      uhPrograms: [
-        { name: 'Creative Media - B.A.', campus: 'UH Mānoa', type: 'Bachelor\'s' },
-        { name: 'Computer Science', campus: 'UH Mānoa', type: 'Bachelor\'s' },
-        { name: 'Digital Media Certificate', campus: 'UH West O\'ahu', type: 'Certificate' }
-      ],
-      keySkills: ['Unity/Unreal Engine', 'C++ Programming', 'Game Mechanics', '3D Modeling', 'Player Psychology'],
-      nextSteps: ['Visit UH Academy for Creative Media', 'Join Game Dev Club', 'Attend career fairs']
-    },
-    {
-      field: 'Psychology with Game Studies',
-      match: 94,
-      uhCampus: 'UH Mānoa',
-      degree: 'B.A. in Psychology',
-      description: 'Study human behavior and apply insights to user experience and game design with UH\'s research-focused curriculum',
-      duration: '4 years',
-      avgSalary: '$78,000',
-      jobGrowth: '+18%',
-      topCareers: [
-        { title: 'UX Researcher', salary: '$85,000-$135,000', demand: 'Very High', companies: ['Microsoft', 'Amazon', 'Netflix'] },
-        { title: 'Behavioral Designer', salary: '$75,000-$115,000', demand: 'High', companies: ['King', 'Zynga', 'Supercell'] },
-        { title: 'User Research Lead', salary: '$95,000-$150,000', demand: 'High', companies: ['Valve', 'Unity', 'Roblox'] }
-      ],
-      uhPrograms: [
-        { name: 'Psychology - B.A.', campus: 'UH Mānoa', type: 'Bachelor\'s' },
-        { name: 'Human Computer Interaction', campus: 'UH Mānoa', type: 'Certificate' },
-        { name: 'Information & Computer Sciences', campus: 'UH Mānoa', type: 'Bachelor\'s' }
-      ],
-      keySkills: ['Research Methods', 'Data Analysis', 'Behavioral Science', 'User Testing', 'Statistical Analysis'],
-      nextSteps: ['Connect with Psychology dept', 'Explore research opportunities', 'Internship at local tech companies']
-    },
-    {
-      field: 'Interactive Media & Narrative Design',
-      match: 92,
-      uhCampus: 'UH Mānoa',
-      degree: 'B.A. in English/Creative Media',
-      description: 'Craft compelling stories and narratives for games, interactive media, and digital experiences with UH\'s creative writing focus',
-      duration: '4 years',
-      avgSalary: '$72,000',
-      jobGrowth: '+20%',
-      topCareers: [
-        { title: 'Narrative Designer', salary: '$70,000-$110,000', demand: 'High', companies: ['Naughty Dog', 'BioWare', 'Telltale'] },
-        { title: 'Content Strategist', salary: '$75,000-$120,000', demand: 'Very High', companies: ['Disney', 'HBO', 'Netflix'] },
-        { title: 'Creative Director', salary: '$90,000-$160,000', demand: 'High', companies: ['Pixar', 'DreamWorks', 'Bungie'] }
-      ],
-      uhPrograms: [
-        { name: 'English - Creative Writing', campus: 'UH Mānoa', type: 'Bachelor\'s' },
-        { name: 'Creative Media', campus: 'UH Mānoa', type: 'Bachelor\'s' },
-        { name: 'Communication Certificate', campus: 'UH West O\'ahu', type: 'Certificate' }
-      ],
-      keySkills: ['Creative Writing', 'Story Structure', 'Character Development', 'Script Writing', 'World Building'],
-      nextSteps: ['Join UH Writers Workshop', 'Portfolio development', 'Connect with ACM faculty']
-    }
-  ];
-
-
-
 
   const activeModalPath = modalPathIndex !== null ? eduPaths[modalPathIndex] : null;
 
@@ -348,7 +274,7 @@ useEffect(() => {
                       } ${cardIsHovered && !cardIsActive ? 'shadow-[0_15px_35px_rgba(15,23,42,0.2)] border-slate-400' : ''}`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`p-3 rounded-2xl border ${cardIsActive ? 'bg-white/60 border-white/80' : 'bg-emerald-50 border-emerald-100'}`}>
+                        <div className={`${cardIsActive ? 'bg-white/60 border-white/80' : 'bg-emerald-50 border-emerald-100'}`}>
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between mb-2">
@@ -399,8 +325,7 @@ useEffect(() => {
                             </div>
                             <p className="text-base text-slate-700 leading-relaxed">{path.description}</p>
                           </div>
-
-                          <div className="grid sm:grid-cols-3 gap-4">
+                          <div className="grid sm:grid-cols-2 gap-4">
                             <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
                               <Clock className="w-5 h-5 text-emerald-600 mb-1" />
                               <p className="text-xs uppercase tracking-widest text-emerald-500">Duration</p>
@@ -411,54 +336,7 @@ useEffect(() => {
                               <p className="text-xs uppercase tracking-widest text-slate-500">Avg Salary</p>
                               <p className="text-lg font-semibold text-slate-900">{path.avgSalary}</p>
                             </div>
-                            <div className="bg-white rounded-2xl p-4 border border-emerald-100">
-                              <TrendingUp className="w-5 h-5 text-emerald-500 mb-1" />
-                              <p className="text-xs uppercase tracking-widest text-slate-500">Job Growth</p>
-                              <p className="text-lg font-semibold text-slate-900">{path.jobGrowth}</p>
-                            </div>
                           </div>
-
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div className="bg-white rounded-2xl p-5 border border-emerald-100">
-                              <div className="flex items-center gap-2 mb-3">
-                                <Briefcase className="w-5 h-5 text-emerald-500" />
-                                <p className="text-sm font-semibold text-slate-800">Role spotlight</p>
-                              </div>
-                              {path.topCareers.length > 0 && (
-                                <div>
-                                  <p className="text-lg font-semibold text-slate-900">{path.topCareers[0].title}</p>
-                                  <p className="text-sm text-slate-600 mb-2">{path.topCareers[0].salary} • {path.topCareers[0].demand} demand</p>
-                                  <p className="text-xs text-slate-500">
-                                    Top employers: {path.topCareers[0].companies.slice(0, 2).join(', ')}{path.topCareers[0].companies.length > 2 ? ' +' : ''}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                            <div className="bg-white rounded-2xl p-5 border border-emerald-100">
-                              <p className="text-sm font-semibold text-slate-800 mb-3">Key skills to build</p>
-                              <div className="flex flex-wrap gap-2">
-                                {path.keySkills.slice(0, 4).map((skill, skillIdx) => (
-                                  <span key={skillIdx} className="px-3 py-1 text-xs rounded-full bg-emerald-50 border border-emerald-100 text-emerald-800">
-                                    {skill}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setExpandedDetails(expandedDetails === idx ? null : idx);
-                            }}
-                            className="px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-white transition-all"
-                          >
-                            <span className="inline-flex items-center gap-2">
-                              {expandedDetails === idx ? 'Hide full pathway details' : 'View full pathway plan'}
-                              <ChevronRight className={`w-4 h-4 transition-transform ${expandedDetails === idx ? 'rotate-90' : 'rotate-0'}`} />
-                            </span>
-                          </button>
-
                           {expandedDetails === idx && (
                             <div className="space-y-6 pt-4 border-t border-emerald-100 max-h-[360px] overflow-y-auto pr-2">
                               <div>
@@ -608,7 +486,7 @@ useEffect(() => {
                   <div className="grid gap-3">
                     {[
                       { title: 'STAR Balance', description: 'Schedule an advising session and map out your UH semester.' },
-                      { title: 'STAR “What-If” Journey', description: 'Watch the YouTube tutorial to preview alternate degree plans.' }
+
                     ].map((resource, idx) => (
                       <button
                         key={idx}

@@ -464,7 +464,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
+    <div className="min-h-screen text-slate-900 relative bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-12 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
         <div className="absolute -bottom-24 right-16 w-80 h-80 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{ animationDelay: "1s" }}></div>

@@ -13,7 +13,7 @@ def create_app():
     app = Flask(__name__)
 
     app.register_blueprint(api_bp)
-    CORS(app, resources={r"/*": {"origins": ["https://uh-pathfinder.vercel.app", "https://uh-pathfinder-lokahi-lions.vercel.app"]}}, supports_credentials=True)
+    CORS(app, resources={r"/*": {"origins": ["https://uh-pathfinder.vercel.app", "https://uh-pathfinder-lokahi-lions.vercel.app", "https://uh-pathfinder-git-chatbot-integration-lokahi-lions.vercel.app"]}}, supports_credentials=True)
 
     return app
 

@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -62,6 +62,8 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showUndergraduateOptions, setShowUndergraduateOptions] = useState(false);
   const [showCommunityColleges, setShowCommunityColleges] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const [questionnaireReady, setQuestionnaireReady] = useState(false);
   
   const [errorMessage, setErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -73,6 +75,29 @@ export default function SignUp() {
     password: "",
     confirmPassword: "",
   });
+  const primaryButtonClasses =
+    "rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-emerald-200 shadow-lg hover:shadow-xl";
+  const outlineButtonClasses =
+    "rounded-2xl border border-emerald-100 text-emerald-700 hover:bg-emerald-50";
+
+  useEffect(() => {
+    if (!showIntro) {
+      const timer = setTimeout(() => setQuestionnaireReady(true), 60);
+      return () => clearTimeout(timer);
+    }
+    setQuestionnaireReady(false);
+  }, [showIntro]);
+
+  const handleBegin = () => {
+    setShowIntro(false);
+  };
+  useEffect(() => {
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, []);
 
   const toggleInterest = (id: string) => {
     setSelectedInterests((prev) =>
@@ -399,17 +424,75 @@ export default function SignUp() {
     });
   };
 
+  if (showIntro) {
+    return (
+      <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9] flex items-center justify-center px-6">
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-16 left-10 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+          <div className="absolute -bottom-20 right-12 w-72 h-72 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{ animationDelay: "0.8s" }}></div>
+        </div>
+        <div className="relative z-10 max-w-3xl text-center space-y-6 bg-white/90 backdrop-blur-xl border border-emerald-100 rounded-3xl shadow-2xl p-10">
+          <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">Pathfinder onboarding</p>
+          <h1 className="text-4xl font-bold text-slate-900 leading-tight">
+            Build your personalized UH journey in a few guided steps
+          </h1>
+          <p className="text-base text-slate-600">
+            We’ll ask about your interests, strengths, and campus goals so your AI advisor can curate the right pathways. This takes about two minutes.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 text-left text-sm text-slate-600">
+            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
+              Tailored degree and campus matches
+            </div>
+            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
+              Advisor-ready notes & reminders
+            </div>
+            <div className="px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
+              AI nudges to keep you on track
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <Button
+              onClick={handleBegin}
+              className="rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-emerald-200 shadow-lg hover:shadow-xl"
+            >
+              Let’s start
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8">
+    <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-12 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+        <div className="absolute -bottom-24 right-16 w-80 h-80 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{ animationDelay: "1s" }}></div>
+        <div
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: "140px 140px"
+          }}
+        ></div>
+      </div>
+      <div className="relative z-10 h-full px-4 py-12 flex items-center justify-center">
+        <div
+          className={`w-full max-w-3xl bg-white/95 rounded-3xl shadow-2xl border border-emerald-100 backdrop-blur-xl p-8 transition-all duration-700 ease-out max-h-[90vh] overflow-y-auto ${
+            questionnaireReady ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}
+        >
         {/* Progress indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-slate-500">
               Question {step} of {TOTAL_STEPS}
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-emerald-50 rounded-full h-2">
             <div
               className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
@@ -421,7 +504,7 @@ export default function SignUp() {
         {step === 1 && (
           <div>
             <h2 className="mb-2">What are your interests?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select one or more options, or type your own
             </p>
 
@@ -436,7 +519,7 @@ export default function SignUp() {
                     {getInterestLabel(interestId)}
                     <button
                       onClick={() => removeInterest(interestId)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-slate-500 hover:text-slate-700"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -453,14 +536,14 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     selectedInterests.includes(interest.id)
                       ? interest.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {interest.label}
                 </button>
               ))}
               
-              <div className="p-4 rounded-lg border-2 border-gray-200 bg-white">
+              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
                 <Input
                   placeholder="Enter your interests..."
                   value={customInterestInput}
@@ -472,18 +555,18 @@ export default function SignUp() {
                   onKeyDown={handleCustomInterestKeyDown}
                   className="border-0 p-0 h-auto focus-visible:ring-0"
                 />
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-xs text-slate-400 mt-2">
                   Press Enter or comma to add
                 </p>
               </div>
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-end">
-              <Button onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={handleNext} className={primaryButtonClasses}>
                 Next
               </Button>
             </div>
@@ -494,7 +577,7 @@ export default function SignUp() {
         {step === 2 && (
           <div>
             <h2 className="mb-2">What skills do you have?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select one or more skills. Choose at least two to continue.
             </p>
 
@@ -508,7 +591,7 @@ export default function SignUp() {
                     {getSkillLabel(skillId)}
                     <button
                       onClick={() => removeSkill(skillId)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-slate-500 hover:text-slate-700"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -525,14 +608,14 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     selectedSkills.includes(skill.id)
                       ? skill.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {skill.label}
                 </button>
               ))}
 
-              <div className="p-4 rounded-lg border-2 border-gray-200 bg-white">
+              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
                 <Input
                   placeholder="Enter your skills..."
                   value={customSkillInput}
@@ -543,21 +626,21 @@ export default function SignUp() {
                   onKeyDown={handleCustomSkillKeyDown}
                   className="border-0 p-0 h-auto focus-visible:ring-0"
                 />
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-xs text-slate-400 mt-2">
                   Press Enter or comma to add
                 </p>
               </div>
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
-              <Button onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={handleNext} className={primaryButtonClasses}>
                 Next
               </Button>
             </div>
@@ -568,7 +651,7 @@ export default function SignUp() {
         {step === 3 && (
           <div>
             <h2 className="mb-2">What experience do you have?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select one or more experiences. Choose at least two to continue.
             </p>
 
@@ -582,7 +665,7 @@ export default function SignUp() {
                     {getExperienceLabel(experienceId)}
                     <button
                       onClick={() => removeExperience(experienceId)}
-                      className="text-gray-500 hover:text-gray-700"
+                      className="text-slate-500 hover:text-slate-700"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -599,14 +682,14 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     selectedExperience.includes(experience.id)
                       ? experience.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {experience.label}
                 </button>
               ))}
 
-              <div className="p-4 rounded-lg border-2 border-gray-200 bg-white">
+              <div className="p-4 rounded-lg border-2 border-slate-200 bg-white">
                 <Input
                   placeholder="Enter your experiences..."
                   value={customExperienceInput}
@@ -617,21 +700,21 @@ export default function SignUp() {
                   onKeyDown={handleCustomExperienceKeyDown}
                   className="border-0 p-0 h-auto focus-visible:ring-0"
                 />
-                <p className="text-xs text-gray-400 mt-2">
+                <p className="text-xs text-slate-400 mt-2">
                   Press Enter or comma to add
                 </p>
               </div>
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
-              <Button onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={handleNext} className={primaryButtonClasses}>
                 Next
               </Button>
             </div>
@@ -642,7 +725,7 @@ export default function SignUp() {
         {step === 4 && !showUndergraduateOptions && (
           <div>
             <h2 className="mb-2">What type of student are you?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select one. You can change this later.
             </p>
 
@@ -653,7 +736,7 @@ export default function SignUp() {
                   {getStudentStatusLabel()}
                   <button
                     onClick={removeStudentStatus}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-slate-500 hover:text-slate-700"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -674,28 +757,28 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     isStudentStatusActive(status.id)
                       ? status.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   <div>{status.label}</div>
                   {status.id === "undergraduate" && (
-                    <div className="text-sm text-gray-500 mt-1">Click to see options &rarr;</div>
+                    <div className="text-sm text-slate-500 mt-1">Click to see options &rarr;</div>
                   )}
                 </button>
               ))}
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
               <Button 
                 onClick={handleNext} 
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className={primaryButtonClasses}
               >
                 Next
               </Button>
@@ -707,7 +790,7 @@ export default function SignUp() {
         {step === 4 && showUndergraduateOptions && (
           <div>
             <h2 className="mb-2">Which year are you in?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select your current year. You can change this later.
             </p>
             <div className="grid grid-cols-2 gap-3 mb-4">
@@ -723,7 +806,7 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     undergraduateYear === year.id
                       ? year.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {year.label}
@@ -732,16 +815,16 @@ export default function SignUp() {
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
               <Button 
                 onClick={handleNext} 
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className={primaryButtonClasses}
               >
                 Next
               </Button>
@@ -753,7 +836,7 @@ export default function SignUp() {
         {step === 5 && !showCommunityColleges && (
           <div>
             <h2 className="mb-2">Which UH campus do you attend?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select the option that best describes you
             </p>
 
@@ -764,7 +847,7 @@ export default function SignUp() {
                   {getCampusLabel()}
                   <button
                     onClick={removeCampus}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-slate-500 hover:text-slate-700"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -785,28 +868,28 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     isCampusButtonActive(campus.id)
                       ? campus.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   <div>{campus.label}</div>
                   {campus.id === "uh-cc" && (
-                    <div className="text-sm text-gray-500 mt-1">Click to see options &rarr;</div>
+                    <div className="text-sm text-slate-500 mt-1">Click to see options &rarr;</div>
                   )}
                 </button>
               ))}
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
               <Button 
                 onClick={handleNext} 
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className={primaryButtonClasses}
               >
                 Next
               </Button>
@@ -818,7 +901,7 @@ export default function SignUp() {
         {step === 5 && showCommunityColleges && (
           <div>
             <h2 className="mb-2">Which UH Community College?</h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-slate-500 mb-6">
               Select your community college
             </p>
 
@@ -829,7 +912,7 @@ export default function SignUp() {
                   {getCampusLabel()}
                   <button
                     onClick={removeCampus}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-slate-500 hover:text-slate-700"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -849,7 +932,7 @@ export default function SignUp() {
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
                     selectedCampus === college.id
                       ? college.color
-                      : "bg-white border-gray-200 hover:border-gray-300"
+                      : "bg-white border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   {college.label}
@@ -858,16 +941,16 @@ export default function SignUp() {
             </div>
 
             {errorMessage && (
-              <p className="text-red-600 mb-4">{errorMessage}</p>
+              <p className="text-rose-600 mb-4">{errorMessage}</p>
             )}
 
             <div className="flex justify-between">
-              <Button onClick={handleBack} variant="outline">
+              <Button onClick={handleBack} variant="outline" className={outlineButtonClasses}>
                 Back
               </Button>
               <Button 
                 onClick={handleNext} 
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className={primaryButtonClasses}
               >
                 Next
               </Button>
@@ -877,11 +960,17 @@ export default function SignUp() {
 
         {/* Step 6: Create Account */}
         {step === 6 && (
-          <div>
-            <h2 className="mb-6">Create your account</h2>
+          <div className="space-y-5">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Final step</p>
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Create your account</h2>
+              <p className="text-sm text-slate-600">
+                We’ll securely save your info so you can return, continue exploring UH pathways, and prepare for advising with everything synced.
+              </p>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">First Name</Label>
                 <Input
                   id="firstName"
                   placeholder="Enter your first name"
@@ -894,7 +983,7 @@ export default function SignUp() {
               </div>
 
               <div>
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Last Name</Label>
                 <Input
                   id="lastName"
                   placeholder="Enter your last name"
@@ -907,7 +996,7 @@ export default function SignUp() {
               </div>
 
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -920,7 +1009,7 @@ export default function SignUp() {
               </div>
 
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
@@ -934,7 +1023,7 @@ export default function SignUp() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -942,7 +1031,7 @@ export default function SignUp() {
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2 block">Confirm Password</Label>
                 <div className="relative">
                   <Input
                     id="confirmPassword"
@@ -956,7 +1045,7 @@ export default function SignUp() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -964,18 +1053,18 @@ export default function SignUp() {
               </div>
 
               {passwordError && (
-                <p className="text-red-600">{passwordError}</p>
+                <p className="text-rose-600">{passwordError}</p>
               )}
 
               {errorMessage && (
-                <p className="text-red-600">{errorMessage}</p>
+                <p className="text-rose-600">{errorMessage}</p>
               )}
 
               <div className="flex justify-between pt-4">
-                <Button onClick={handleBack} variant="outline" type="button">
+                <Button onClick={handleBack} variant="outline" type="button" className={outlineButtonClasses}>
                   Back
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+                <Button type="submit" className={primaryButtonClasses}>
                   Create Account
                 </Button>
               </div>
@@ -984,5 +1073,6 @@ export default function SignUp() {
         )}
       </div>
     </div>
+  </div>
   );
 }

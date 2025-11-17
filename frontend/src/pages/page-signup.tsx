@@ -5,6 +5,8 @@ import { Label } from "../components/ui/label";
 import { Eye, EyeOff, X } from "lucide-react";
 import React from "react";
 
+const TOTAL_STEPS = 6;
+
 type CareerInterest = {
   id: string;
   label: string;
@@ -12,11 +14,27 @@ type CareerInterest = {
 };
 
 const presetInterests: CareerInterest[] = [
+  { id: "healthcare", label: "Health & Medicine", color: "bg-red-100 border-red-300" },
   { id: "software-engineer", label: "Software Engineer", color: "bg-blue-100 border-blue-300" },
-  { id: "data-scientist", label: "Data Scientist", color: "bg-green-100 border-green-300" },
-  { id: "ux-designer", label: "UX Designer", color: "bg-purple-100 border-purple-300" },
-  { id: "business-management", label: "Business Management", color: "bg-yellow-100 border-yellow-300" },
-  { id: "graphic-designer", label: "Graphic Designer", color: "bg-pink-100 border-pink-300" },
+  { id: "business", label: "Business & Management", color: "bg-blue-100 border-blue-300" },
+  { id: "education", label: "Teaching & Education", color: "bg-yellow-100 border-yellow-300" },
+  { id: "creative-arts", label: "Creative Arts & Design", color: "bg-pink-100 border-pink-300" },
+];
+
+const presetSkills: CareerInterest[] = [
+  { id: "communication", label: "Communication", color: "bg-green-100 border-green-300" },
+  { id: "leadership", label: "Leadership", color: "bg-purple-100 border-purple-300" },
+  { id: "problem-solving", label: "Problem Solving", color: "bg-yellow-100 border-yellow-300" },
+  { id: "technical", label: "Technical Skills", color: "bg-blue-100 border-blue-300" },
+  { id: "teamwork", label: "Collaboration & Teamwork", color: "bg-orange-100 border-orange-300" },
+];
+
+const presetExperience: CareerInterest[] = [
+  { id: "internship", label: "Internships", color: "bg-teal-100 border-teal-300" },
+  { id: "part-time", label: "Part-time Work", color: "bg-pink-100 border-pink-300" },
+  { id: "volunteering", label: "Volunteering", color: "bg-indigo-100 border-indigo-300" },
+  { id: "research", label: "Research Projects", color: "bg-cyan-100 border-cyan-300" },
+  { id: "club-projects", label: "Club Projects", color: "bg-red-100 border-red-300" },
 ];
 
 const communityColleges = [
@@ -33,6 +51,10 @@ export default function SignUp() {
   const [step, setStep] = useState(1);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [customInterestInput, setCustomInterestInput] = useState("");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [customSkillInput, setCustomSkillInput] = useState("");
+  const [selectedExperience, setSelectedExperience] = useState<string[]>([]);
+  const [customExperienceInput, setCustomExperienceInput] = useState("");
   const [studentStatus, setStudentStatus] = useState<string>("");
   const [undergraduateYear, setUndergraduateYear] = useState<string>("");
   const [selectedCampus, setSelectedCampus] = useState<string>("");
@@ -63,6 +85,28 @@ export default function SignUp() {
     setSelectedInterests((prev) => prev.filter((i) => i !== interest));
   };
 
+  const toggleSkill = (id: string) => {
+    setSelectedSkills((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+    setErrorMessage("");
+  };
+
+  const removeSkill = (skill: string) => {
+    setSelectedSkills((prev) => prev.filter((i) => i !== skill));
+  };
+
+  const toggleExperience = (id: string) => {
+    setSelectedExperience((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+    setErrorMessage("");
+  };
+
+  const removeExperience = (experience: string) => {
+    setSelectedExperience((prev) => prev.filter((i) => i !== experience));
+  };
+
   const colorOptions = [
     "bg-blue-100 border-blue-300",
     "bg-green-100 border-green-300",
@@ -89,6 +133,28 @@ export default function SignUp() {
     return found ? found.label : interestId;
   };
 
+  const getSkillColor = (skillId: string) => {
+    const found = presetSkills.find((i) => i.id === skillId);
+    if (found) return found.color;
+    return "bg-blue-100 border-blue-300";
+  };
+
+  const getSkillLabel = (skillId: string) => {
+    const found = presetSkills.find((i) => i.id === skillId);
+    return found ? found.label : skillId;
+  };
+
+  const getExperienceColor = (experienceId: string) => {
+    const found = presetExperience.find((i) => i.id === experienceId);
+    if (found) return found.color;
+    return "bg-blue-100 border-blue-300";
+  };
+
+  const getExperienceLabel = (experienceId: string) => {
+    const found = presetExperience.find((i) => i.id === experienceId);
+    return found ? found.label : experienceId;
+  };
+
   const capitalizeWords = (str: string) => {
     return str
       .split(' ')
@@ -110,9 +176,37 @@ export default function SignUp() {
       }
     }
   };
+  
+  const handleCustomSkillKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const value = customSkillInput.trim();
+      if (value) {
+        const capitalizedValue = capitalizeWords(value);
+        if (!selectedSkills.includes(capitalizedValue)) {
+          setSelectedSkills((prev) => [...prev, capitalizedValue]);
+          setCustomSkillInput("");
+          setErrorMessage("");
+        }
+      }
+    }
+  };
 
-
-
+  const handleCustomExperienceKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      const value = customExperienceInput.trim();
+      if (value) {
+        const capitalizedValue = capitalizeWords(value);
+        if (!selectedExperience.includes(capitalizedValue)) {
+          setSelectedExperience((prev) => [...prev, capitalizedValue]);
+          setCustomExperienceInput("");
+          setErrorMessage("");
+        }
+      }
+    }
+  };
+  
   const handleStudentStatus = (status: string) => {
     if (status === "undergraduate") {
       setShowUndergraduateOptions(true);
@@ -128,6 +222,7 @@ export default function SignUp() {
   const handleUndergraduateYear = (year: string) => {
     setUndergraduateYear(year);
     setStudentStatus(year);
+    setShowUndergraduateOptions(false);
     setErrorMessage("");
   };
 
@@ -153,46 +248,66 @@ export default function SignUp() {
       return;
     }
 
-    // Step 2: Validate student status
+    // Step 2: Validate skills
     if (step === 2) {
-      if (showUndergraduateOptions) {
-        if (!undergraduateYear) {
-          setErrorMessage("Required: Please select your year");
-          return;
-        }
-      } else {
-        if (!studentStatus) {
-          setErrorMessage("Required: Please select your student status");
-          return;
-        }
+      if (selectedSkills.length < 2) {
+        setErrorMessage("Required: Please select at least 2 skills");
+        return;
       }
       setErrorMessage("");
       setStep(3);
       return;
     }
 
-    // Step 3: Validate campus
+    // Step 3: Validate experience
     if (step === 3) {
-      if (!selectedCampus) {
-        setErrorMessage("Required: Please select your campus");
+      if (selectedExperience.length < 2) {
+        setErrorMessage("Required: Please select at least 2 experiences");
         return;
       }
       setErrorMessage("");
       setStep(4);
       return;
     }
+
+    // Step 4: Validate student status
+    if (step === 4) {
+      if (showUndergraduateOptions) {
+        if (!undergraduateYear) {
+          setErrorMessage("Required: Please select your year");
+          return;
+        }
+      } else if (!studentStatus) {
+        setErrorMessage("Required: Please select your student status");
+        return;
+      }
+      setErrorMessage("");
+      setStep(5);
+      return;
+    }
+
+    // Step 5: Validate campus
+    if (step === 5) {
+      if (!selectedCampus) {
+        setErrorMessage("Required: Please select your campus");
+        return;
+      }
+      setErrorMessage("");
+      setStep(6);
+      return;
+    }
   };
 
   const handleBack = () => {
     setErrorMessage("");
-    if (showCommunityColleges) {
+    if (showCommunityColleges && step === 5) {
       setShowCommunityColleges(false);
       // Don't clear selectedCampus - keep the selection
-    } else if (showUndergraduateOptions && step === 2) {
+    } else if (showUndergraduateOptions && step === 4) {
       setShowUndergraduateOptions(false);
       // Don't clear undergraduateYear or studentStatus - keep the selection
     } else {
-      setStep((prev) => prev - 1);
+      setStep((prev) => Math.max(1, prev - 1));
     }
   };
 
@@ -238,6 +353,23 @@ export default function SignUp() {
     return campusLabels[selectedCampus] || selectedCampus;
   };
 
+  const isCommunityCollegeSelection = () =>
+    communityColleges.some((college) => college.id === selectedCampus);
+
+  const isCampusButtonActive = (campusId: string) => {
+    if (campusId === "uh-cc") {
+      return isCommunityCollegeSelection();
+    }
+    return selectedCampus === campusId;
+  };
+
+  const isStudentStatusActive = (statusId: string) => {
+    if (statusId === "undergraduate") {
+      return Boolean(undergraduateYear);
+    }
+    return studentStatus === statusId;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
@@ -259,6 +391,8 @@ export default function SignUp() {
     console.log({
       ...formData,
       selectedInterests,
+      selectedSkills,
+      selectedExperience,
       studentStatus,
       undergraduateYear,
       selectedCampus,
@@ -272,13 +406,13 @@ export default function SignUp() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-500">
-              Question {step} of 4
+              Question {step} of {TOTAL_STEPS}
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(step / 4) * 100}%` }}
+              style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
             />
           </div>
         </div>
@@ -356,8 +490,156 @@ export default function SignUp() {
           </div>
         )}
 
-        {/* Step 2: Student Status */}
-        {step === 2 && !showUndergraduateOptions && (
+        {/* Step 2: Skills */}
+        {step === 2 && (
+          <div>
+            <h2 className="mb-2">What skills do you have?</h2>
+            <p className="text-gray-500 mb-6">
+              Select one or more skills. Choose at least two to continue.
+            </p>
+
+            {selectedSkills.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {selectedSkills.map((skillId) => (
+                  <span
+                    key={skillId}
+                    className={`px-3 py-1 border-2 rounded-lg flex items-center gap-2 ${getSkillColor(skillId)}`}
+                  >
+                    {getSkillLabel(skillId)}
+                    <button
+                      onClick={() => removeSkill(skillId)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {presetSkills.map((skill) => (
+                <button
+                  key={skill.id}
+                  onClick={() => toggleSkill(skill.id)}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    selectedSkills.includes(skill.id)
+                      ? skill.color
+                      : "bg-white border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {skill.label}
+                </button>
+              ))}
+
+              <div className="p-4 rounded-lg border-2 border-gray-200 bg-white">
+                <Input
+                  placeholder="Enter your skills..."
+                  value={customSkillInput}
+                  onChange={(e) => {
+                    const value = capitalizeWords(e.target.value);
+                    setCustomSkillInput(value);
+                  }}
+                  onKeyDown={handleCustomSkillKeyDown}
+                  className="border-0 p-0 h-auto focus-visible:ring-0"
+                />
+                <p className="text-xs text-gray-400 mt-2">
+                  Press Enter or comma to add
+                </p>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <p className="text-red-600 mb-4">{errorMessage}</p>
+            )}
+
+            <div className="flex justify-between">
+              <Button onClick={handleBack} variant="outline">
+                Back
+              </Button>
+              <Button onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700">
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Experience */}
+        {step === 3 && (
+          <div>
+            <h2 className="mb-2">What experience do you have?</h2>
+            <p className="text-gray-500 mb-6">
+              Select one or more experiences. Choose at least two to continue.
+            </p>
+
+            {selectedExperience.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {selectedExperience.map((experienceId) => (
+                  <span
+                    key={experienceId}
+                    className={`px-3 py-1 border-2 rounded-lg flex items-center gap-2 ${getExperienceColor(experienceId)}`}
+                  >
+                    {getExperienceLabel(experienceId)}
+                    <button
+                      onClick={() => removeExperience(experienceId)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {presetExperience.map((experience) => (
+                <button
+                  key={experience.id}
+                  onClick={() => toggleExperience(experience.id)}
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${
+                    selectedExperience.includes(experience.id)
+                      ? experience.color
+                      : "bg-white border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {experience.label}
+                </button>
+              ))}
+
+              <div className="p-4 rounded-lg border-2 border-gray-200 bg-white">
+                <Input
+                  placeholder="Enter your experiences..."
+                  value={customExperienceInput}
+                  onChange={(e) => {
+                    const value = capitalizeWords(e.target.value);
+                    setCustomExperienceInput(value);
+                  }}
+                  onKeyDown={handleCustomExperienceKeyDown}
+                  className="border-0 p-0 h-auto focus-visible:ring-0"
+                />
+                <p className="text-xs text-gray-400 mt-2">
+                  Press Enter or comma to add
+                </p>
+              </div>
+            </div>
+
+            {errorMessage && (
+              <p className="text-red-600 mb-4">{errorMessage}</p>
+            )}
+
+            <div className="flex justify-between">
+              <Button onClick={handleBack} variant="outline">
+                Back
+              </Button>
+              <Button onClick={handleNext} className="bg-indigo-600 hover:bg-indigo-700">
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Student Status */}
+        {step === 4 && !showUndergraduateOptions && (
           <div>
             <h2 className="mb-2">What type of student are you?</h2>
             <p className="text-gray-500 mb-6">
@@ -390,7 +672,7 @@ export default function SignUp() {
                   key={status.id}
                   onClick={() => handleStudentStatus(status.id)}
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    studentStatus === status.id
+                    isStudentStatusActive(status.id)
                       ? status.color
                       : "bg-white border-gray-200 hover:border-gray-300"
                   }`}
@@ -421,8 +703,8 @@ export default function SignUp() {
           </div>
         )}
 
-        {/* Step 2b: Undergraduate Year Selection */}
-        {step === 2 && showUndergraduateOptions && (
+        {/* Step 4b: Undergraduate Year Selection */}
+        {step === 4 && showUndergraduateOptions && (
           <div>
             <h2 className="mb-2">Which year are you in?</h2>
             <p className="text-gray-500 mb-6">
@@ -467,8 +749,8 @@ export default function SignUp() {
           </div>
         )}
 
-        {/* Step 3: UH Campus */}
-        {step === 3 && !showCommunityColleges && (
+        {/* Step 5: UH Campus */}
+        {step === 5 && !showCommunityColleges && (
           <div>
             <h2 className="mb-2">Which UH campus do you attend?</h2>
             <p className="text-gray-500 mb-6">
@@ -501,7 +783,7 @@ export default function SignUp() {
                   key={campus.id}
                   onClick={() => handleCampusSelection(campus.id)}
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    selectedCampus === campus.id
+                    isCampusButtonActive(campus.id)
                       ? campus.color
                       : "bg-white border-gray-200 hover:border-gray-300"
                   }`}
@@ -532,8 +814,8 @@ export default function SignUp() {
           </div>
         )}
 
-        {/* Step 3b: Community College Selection */}
-        {step === 3 && showCommunityColleges && (
+        {/* Step 5b: Community College Selection */}
+        {step === 5 && showCommunityColleges && (
           <div>
             <h2 className="mb-2">Which UH Community College?</h2>
             <p className="text-gray-500 mb-6">
@@ -561,6 +843,7 @@ export default function SignUp() {
                   key={college.id}
                   onClick={() => {
                     setSelectedCampus(college.id);
+                    setShowCommunityColleges(false);
                     setErrorMessage("");
                   }}
                   className={`p-4 rounded-lg border-2 transition-all text-left ${
@@ -592,8 +875,8 @@ export default function SignUp() {
           </div>
         )}
 
-        {/* Step 4: Create Account */}
-        {step === 4 && (
+        {/* Step 6: Create Account */}
+        {step === 6 && (
           <div>
             <h2 className="mb-6">Create your account</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -603,9 +886,10 @@ export default function SignUp() {
                   id="firstName"
                   placeholder="Enter your first name"
                   value={formData.firstName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = capitalizeWords(e.target.value);
+                    setFormData({ ...formData, firstName: value });
+                  }}
                 />
               </div>
 
@@ -615,9 +899,10 @@ export default function SignUp() {
                   id="lastName"
                   placeholder="Enter your last name"
                   value={formData.lastName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const value = capitalizeWords(e.target.value);
+                    setFormData({ ...formData, lastName: value });
+                  }}
                 />
               </div>
 

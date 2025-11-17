@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sparkles, BookOpen, TrendingUp, ArrowRight, Brain, Zap, PlayCircle, HelpCircle, ChevronDown, ChevronUp, ChevronsDown } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
@@ -75,26 +75,41 @@ export default function HomePage() {
   }, []);  
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-emerald-900 to-slate-900 text-white">
+    <div className="min-h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9]">
 
       {/* Floating background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-700 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-emerald-600 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-teal-700 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-16 left-10 w-72 h-72 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+        <div className="absolute top-32 right-20 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-40 animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute -bottom-32 left-1/3 w-96 h-96 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(15,23,42,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(15,23,42,0.04) 1px, transparent 1px)
+            `,
+            backgroundSize: '140px 140px'
+          }}
+        ></div>
       </div>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-black/30 backdrop-blur-lg' : ''}`}>
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY > 50 ? 'bg-white/90 backdrop-blur-lg shadow-sm' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2 text-2xl font-bold">
-            <Brain className="text-emerald-400" />
-            <span className="bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">UH Pathfinder</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center gap-2 text-2xl font-bold text-slate-900"
+            aria-label="UH Pathfinder home"
+          >
+            <Brain className="text-emerald-500" />
+            <span className="bg-gradient-to-r from-emerald-500 to-lime-400 bg-clip-text text-transparent">UH Pathfinder</span>
+          </button>
           <button
             type="button"
             onClick={handleLogin}
-            className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-105"
+            className="px-6 py-2 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm hover:-translate-y-0.5 hover:border-emerald-200 transition-all"
           >
             Sign In
           </button>
@@ -102,18 +117,18 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative px-6 pt-36 pb-32 min-h-[80vh] flex items-center">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/20 rounded-full mb-6 backdrop-blur-sm animate-pulse">
-              <Sparkles className="w-4 h-4 text-emerald-300" />
-              <span className="text-sm text-emerald-200">AI-Powered Career Discovery</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-emerald-100 rounded-full mb-6 shadow-sm">
+              <Sparkles className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">AI-Powered Career Discovery</span>
             </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-slate-900 tracking-tight">
               Find your dream path with
-              <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent"> UH Pathfinder!</span>
+              <span className="bg-gradient-to-r from-emerald-500 via-lime-400 to-emerald-300 bg-clip-text text-transparent"> UH Pathfinder!</span>
             </h1>
-            <p className="text-xl text-slate-200 mb-10 leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed">
               Our AI analyzes your interests, skills, and experience to match you with careers and UH educational path that actually fits you. Get started now, or watch a quick walkthrough to see how it works!
             </p>
 
@@ -122,52 +137,62 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={handleSignup}
-                className="px-8 py-3 rounded-full bg-emerald-500 text-slate-950 font-semibold text-lg shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 hover:scale-105 transition-all duration-200"
+                className="px-8 py-3 rounded-full bg-gradient-to-r from-emerald-500 to-lime-400 text-white font-semibold text-lg shadow-lg shadow-emerald-200 hover:scale-105 transition-all duration-200"
               >
                 Get Started
               </button>
               <button
                 type="button"
                 onClick={handleScrollToGuide}
-                className="px-8 py-3 rounded-full border border-white/20 bg-white/5 text-slate-50 font-semibold text-lg hover:bg-white/10 hover:border-emerald-400/60 hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                className="px-8 py-3 rounded-full border border-emerald-100 bg-white text-emerald-700 font-semibold text-lg hover:border-emerald-300 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 shadow-sm"
               >
                 <PlayCircle className="w-5 h-5" />
                 View walkthrough
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={handleScrollToGuide}
+              className="mt-12 mx-auto flex flex-col items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700"
+              aria-label="Scroll for more information"
+            >
+              <span className="text-xs uppercase tracking-[0.35em]">Scroll</span>
+              <ChevronsDown className="w-6 h-6 animate-bounce" />
+            </button>
           </div>
         </div>
       </section>
 
       {/* User Guide Section */}
-      <section id="guide" className="py-20 px-6 bg-white/5 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/20 rounded-full mb-4 backdrop-blur-sm">
-              <HelpCircle className="w-4 h-4 text-emerald-300" />
-              <span className="text-sm text-emerald-200">Quick Start Guide</span>
+      <section id="guide" className="py-20 px-6">
+        <div className="max-w-7xl mx-auto bg-white border border-emerald-100 rounded-3xl shadow-xl p-8 md:p-12">
+            <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full mb-4 border border-emerald-100">
+              <HelpCircle className="w-4 h-4 text-emerald-500" />
+              <span className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">Quick Start Guide</span>
             </div>
-            <h2 className="text-4xl font-bold mb-4">How to navigate UH Pathfinder</h2>
-            <p className="text-xl text-slate-200">Get started in 3 simple steps</p>
+            <h2 className="text-4xl font-bold text-slate-900 mb-2">How to navigate UH Pathfinder</h2>
+            <p className="text-lg text-slate-600">Get started in 3 simple steps</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 items-start">
 
             {/* Video Tutorial */}
             <div className="relative">
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden hover:border-emerald-500/50 transition-all duration-300">
+              <div className="bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100 overflow-hidden shadow-sm">
                 {!showVideo ? (
                   <div 
-                    className="relative aspect-video bg-gradient-to-br from-emerald-800/30 to-teal-800/30 flex items-center justify-center cursor-pointer group"
+                    className="relative aspect-video flex items-center justify-center cursor-pointer group"
                     onClick={() => setShowVideo(true)}
                   >
-                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-200/60 to-lime-200/40"></div>
                     <div className="relative z-10 text-center">
-                      <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                        <PlayCircle className="w-12 h-12 text-emerald-700" />
+                      <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg shadow-emerald-200">
+                        <PlayCircle className="w-12 h-12 text-emerald-600" />
                       </div>
-                      <p className="text-lg font-semibold">Watch Tutorial Video</p>
-                      <p className="text-sm text-slate-300">2 minutes</p>
+                      <p className="text-lg font-semibold text-slate-900">Watch Tutorial Video</p>
+                      <p className="text-sm text-slate-500">2 minutes</p>
                     </div>
                   </div>
                 ) : (
@@ -184,8 +209,8 @@ export default function HomePage() {
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">Complete Walkthrough</h3>
-                  <p className="text-slate-300">Learn how to use all features, from interest input to career exploration</p>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Walkthrough</h3>
+                  <p className="text-slate-600 text-sm">Learn how to use all features, from interest input to career exploration</p>
                 </div>
               </div>
             </div>
@@ -214,29 +239,29 @@ export default function HomePage() {
                 return (
                   <div
                     key={idx}
-                    className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 hover:border-emerald-500/50 transition-all duration-300"
+                    className="p-6 bg-white rounded-2xl border border-emerald-100 hover:border-emerald-300 transition-all duration-300 shadow-sm"
                   >
                     <button
                       type="button"
                       onClick={() => setOpenStep(isOpen ? null : idx)}
                       className="w-full flex items-center gap-4 text-left"
                     >
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center font-bold text-xl">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-lime-400 rounded-xl flex items-center justify-center font-bold text-xl text-white shadow-md shadow-emerald-200">
                         {item.step}
                       </div>
 
                       <div className="flex-1 flex items-center justify-between gap-4">
-                        <h4 className="text-lg font-bold">{item.title}</h4>
+                        <h4 className="text-lg font-bold text-slate-900">{item.title}</h4>
                         {isOpen ? (
-                          <ChevronUp className="w-5 h-5 text-emerald-300" />
+                          <ChevronUp className="w-5 h-5 text-emerald-500" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-emerald-300" />
+                          <ChevronDown className="w-5 h-5 text-emerald-500" />
                         )}
                       </div>
                     </button>
 
                     {isOpen && (
-                      <p className="mt-3 ml-16 text-slate-300 text-sm leading-relaxed">
+                      <p className="mt-3 ml-16 text-slate-600 text-sm leading-relaxed">
                         {item.desc}
                       </p>
                     )}
@@ -247,14 +272,17 @@ export default function HomePage() {
           </div>
 
           {/* Features */}
-          <div className="h-px w-full bg-white/15 mt-16 mb-10" />
+          <div className="h-px w-full bg-emerald-100 mt-16 mb-10" />
           <section id="why" ref={whyRef} className="py-20 px-6">
             <div className="max-w-7xl mx-auto">
-              <div className="mb-10 flex items-center justify-between gap-4">
-                <h2 className="text-4xl font-bold">Why UH Pathfinder?</h2>
-                <p className="text-sm text-slate-300">
-                  What makes this different from a random career quiz
-                </p>
+              <div className="mb-10">
+                <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Proof it’s more than a career quiz</p>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Why UH Pathfinder?</h2>
+                  <p className="text-sm text-slate-500">
+                    What makes this different from a random career quiz
+                  </p>
+                </div>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
@@ -278,13 +306,13 @@ export default function HomePage() {
                 ].map((item, idx) => (
                   <div
                     key={item.title}
-                    className={`p-6 md:p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-lg transition-all duration-700 ${
+                    className={`p-6 md:p-8 rounded-2xl bg-white border border-emerald-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-emerald-200/70 hover:shadow-lg hover:border-emerald-200 ${
                       whyVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
                     }`}
                     style={{ transitionDelay: whyVisible ? `${idx * 120}ms` : '0ms' }}
                   >
-                    <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
@@ -297,11 +325,12 @@ export default function HomePage() {
           <section
             id="faq"
             ref={faqRef}
-            className="py-20 px-6 border-t border-white/10"
+            className="py-20 px-6 border-t border-emerald-100"
           >
             <div className="max-w-7xl mx-auto">
-              <div className="mb-10 flex items-center justify-between gap-4">
-                <h2 className="text-4xl font-bold">Frequently Asked Questions</h2>
+              <div className="mb-10">
+                <p className="text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold mb-2">Support center</p>
+                <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Frequently Asked Questions</h2>
               </div>
 
               <div className="space-y-4">
@@ -329,13 +358,13 @@ export default function HomePage() {
                 ].map((item, idx) => (
                   <div
                     key={item.q}
-                    className={`rounded-2xl bg-white/5 border border-white/10 p-6 md:p-7 transition-all duration-700 ${
+                    className={`rounded-2xl bg-white border border-emerald-100 p-6 md:p-7 transition-all duration-300 shadow-sm hover:-translate-y-1 hover:shadow-emerald-200/70 hover:shadow-lg hover:border-emerald-200 ${
                       faqVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
                     }`}
                     style={{ transitionDelay: faqVisible ? `${idx * 120}ms` : '0ms' }}
                   >
-                    <p className="font-semibold text-lg mb-2">{item.q}</p>
-                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                    <p className="font-semibold text-lg mb-2 text-slate-900">{item.q}</p>
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed">
                       {item.a}
                     </p>
                   </div>

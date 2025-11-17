@@ -1,8 +1,8 @@
 import { StrictMode } from 'react'
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { AuthProvider } from "./auth/AuthContext.tsx";
+import { ProtectedRoute } from "./auth/ProtectedRoute.tsx";
 import HomePage from './pages/LandingPage.tsx'
 import ResultsPathway from './pages/Results.tsx'
 import SignupForm from './pages/Signup.tsx'

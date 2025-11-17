@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
 import { educationalPaths } from '../../../backend/apps/services/educationalPaths';
+import { aipaths } from '../services/api';
 
 export default function ResultsPathway() {
   const [selectedPath, setSelectedPath] = useState(0);
@@ -16,7 +17,7 @@ export default function ResultsPathway() {
   const [actionPlanOpen, setActionPlanOpen] = useState(false);
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [modalPathIndex, setModalPathIndex] = useState<number | null>(null);
-  const [eduPaths, setEduPaths] = useState<EducationalPath[]>([]);
+  const [eduPaths, setEduPaths] = useState<any[]>([]);
   type EducationalPath = {
   field: string;
   match: number;
@@ -96,17 +97,14 @@ const userProfile = {
 };
 
 useEffect(() => {
-  async function loadPaths() {
-    try {
-      const res = await fetch("/http://localhost:5000/api/ai-paths");
-      const data = await res.json();
-      setEduPaths(data);
-    } catch (err) {
-      console.error("Failed to load educational paths:", err);
-    }
+  async function load() {
+    const result = await aipaths(userProfile.interests);
+    console.log("AI returned:", result);
+    setEduPaths(result);
   }
-  loadPaths();
+  load();
 }, []);
+
 
   const activeModalPath = modalPathIndex !== null ? eduPaths[modalPathIndex] : null;
 
@@ -246,11 +244,10 @@ useEffect(() => {
                   <GraduationCap className="text-emerald-500 w-7 h-7" />
                   Top Matches
                 </h3>
-                <span className="text-sm text-slate-500">{educationalPaths.length} paths found</span>
+                <span className="text-sm text-slate-500">{eduPaths.length} paths found</span>
               </div>
               <div className="space-y-6">
-                {educationalPaths.map((path, idx) => {
-
+                {eduPaths.map((path, idx) => {
                   const cardIsActive = selectedPath === idx;
                   const cardIsHovered = hoveredPath === idx;
                   return (

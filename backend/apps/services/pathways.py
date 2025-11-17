@@ -3,14 +3,40 @@ import os
 import re
 from google.genai import Client as GeminiClient
 from dotenv import load_dotenv
+import supabase
+from supabase import create_client, Client
 
+# Load environment variables
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
 if not api_key:
     raise ValueError("GEMINI_API_KEY not set")
 
+# Initialize clients
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
 client = GeminiClient(api_key=api_key)
+
+def get_user_interests(email: str):
+    # Fetch the row from 'profiles' table matching the user's email
+    response = (
+        supabase.table("profiles")
+        .select("interests")  # only grab the interests column
+        .eq("email", email)   # match the user's email
+        .maybe_single()       # returns None if no match
+        .execute()
+    )
+
+    if response is None or response.data is None:
+        return []  # No interests found
+
+    return response.data.get("interests", [])
+
+
 
 def generate_educational_paths(user_interests, max_paths=3):
     prompt = f"""
@@ -64,17 +90,24 @@ def generate_educational_paths(user_interests, max_paths=3):
 
     return [normalize(p) for p in data]
 
-
 if __name__ == "__main__":
-    user_interests = ["game design", "interactive media", "psychology"]
-    paths = generate_educational_paths(user_interests, max_paths=3)
+    user_email = "student@example.com"  # the email of the user you want to fetch
+    #Fetch the user's interests from Supabase
+    user_interests = get_user_interests(user_email)
 
-    print(f"✅ Generated {len(paths)} educational paths")
-    print(paths)
+    if not user_interests:
+        print(f"No interests found for {user_email}")
+    else:
+        #Pass those interests into AI function
+        paths = generate_educational_paths(user_interests, max_paths=3)
 
-    if paths:
-        with open("educationalPaths.js", "w") as f:
-            f.write("export const educationalPaths = ")
-            json.dump(paths, f, indent=2)
-            f.write(";")
-        print("✅ educationalPaths.js ready for React")
+        print(f"✅ Generated {len(paths)} educational paths")
+        print(paths)
+
+        # write to JS file for React
+        if paths:
+            with open("educationalPaths.js", "w") as f:
+                f.write("export const educationalPaths = ")
+                json.dump(paths, f, indent=2)
+                f.write(";")
+            print("✅ educationalPaths.js ready for React")

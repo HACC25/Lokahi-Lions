@@ -84,7 +84,7 @@ def format_conversation_history():
     
     return history_text
 
-def chat(user_query: str):
+def chat(user_query: str, user_interests: list = []):
     """Main chatbot function with conversation memory"""
     print(f"\n🔍 Searching for relevant courses...")
     
@@ -114,11 +114,13 @@ def chat(user_query: str):
     history = format_conversation_history()
     
     # Create prompt for Gemini with conversation history
-    prompt = f"""You are a helpful university course advisor assistant. A student has asked a question about courses.
+    prompt = f"""You are a helpful university course advisor assistant. A student has asked a question about courses and career.
     Based on the following course information from the University of Hawaii system and the previous conversation, provide a helpful and accurate response.
     {history}
     CURRENT STUDENT QUESTION:
     {user_query}
+    STUDENT INTERESTS:
+    {', '.join(user_interests) if user_interests else 'None'}
     RELEVANT COURSES:
     {context}
     Please provide a clear, conversational response that:
@@ -129,6 +131,7 @@ def chat(user_query: str):
     5. Is friendly and encouraging
     6. References previous parts of the conversation when relevant (e.g., "As I mentioned earlier..." or "Building on what we discussed...")
     7. For follow-up questions like "what about...", "tell me more", or "any others?", use context from the conversation history
+    8. If their question is unrelated to UH courses or career exploration, politely inform them to try rephrasing.
 Response:"""
     
     # Generate response using LangChain's ChatGoogleGenerativeAI
@@ -153,7 +156,7 @@ def reset_conversation():
     conversation_history = []
     print("🔄 Conversation history cleared!")
 
-def main():
+def startChat(initial_prompt: str, user_interests: list = []):
     """Interactive chat loop"""
     print("=" * 60)
     print("🌺 University of Hawaii Course Chatbot")
@@ -163,25 +166,21 @@ def main():
     print("Type 'reset' to clear conversation history.\n")
     
     while True:
-        user_input = input("You: ").strip()
-        
-        if user_input.lower() in ['quit', 'exit', 'q']:
-            print("\n👋 Aloha! Have a great day!")
-            break
-        
-        if user_input.lower() == 'reset':
+        if initial_prompt.lower() == 'reset':
             reset_conversation()
             continue
         
-        if not user_input:
+        if not initial_prompt:
             continue
         
         try:
-            response = chat(user_input)
+            response = chat(initial_prompt, user_interests)
             print(f"\n🤖 Assistant: {response}\n")
         except Exception as e:
             print(f"\n❌ Error: {e}\n")
             print("Please try rephrasing your question.\n")
 
 if __name__ == "__main__":
-    main()
+    prompt = "This is a test message to verify the chatbot is working."
+    interests = ["computer science", "data science"]
+    startChat(prompt, interests)

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Brain, TrendingUp, DollarSign, GraduationCap, MessageSquare, Send, X, ChevronRight, Building2, MapPin, Gamepad2, PenSquare, Clock, Briefcase, UserCircle, Heart } from 'lucide-react';
 import SignOutModal from './page-signout';
 import { useNavigate } from 'react-router-dom';
+import { chatbot } from '../services/api';
+import selectedInterests from './page-profile';
 
 export default function ResultsPathway() {
   const navigate = useNavigate();
@@ -108,12 +110,13 @@ export default function ResultsPathway() {
     setCompareModalOpen(true);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
-    
+
+    const response = await chatbot(inputMessage, selectedInterests);
     setChatMessages([...chatMessages, 
       { role: 'user', content: inputMessage },
-      { role: 'assistant', content: 'That\'s a great question! Based on your interests in ' + userInterests.join(', ') + ', I can help you explore UH programs that blend these areas. Would you like to learn about specific campuses, scholarship opportunities, or hear from current students in these fields?' }
+      { role: 'assistant', content: response }
     ]);
     setInputMessage('');
   };
@@ -476,8 +479,8 @@ export default function ResultsPathway() {
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="Ask me anything about UH programs..."
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage}
+                        placeholder="Ask me anything about careers or UH programs..."
                         className="flex-1 px-5 py-3 bg-white border border-emerald-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-300 text-sm placeholder-slate-400"
                       />
                       <button 

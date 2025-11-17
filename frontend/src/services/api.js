@@ -18,3 +18,12 @@ export async function loginUser(email, password) {
   });
   return response.json();
 }
+
+export async function chatbot(prompt, interests) {
+  const response = await fetch(`${API_URL}/chatbot`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, interests }),
+  });
+  return response.json();
+}

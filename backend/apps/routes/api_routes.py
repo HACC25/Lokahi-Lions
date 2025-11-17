@@ -83,3 +83,22 @@ def login():
         return jsonify({"message": "Login successful", "loginAttempt": "success"}), 200
     return jsonify({"message": "Invalid credentials", "loginAttempt": "fail"}), 401
     
+@api_bp.route('/chatbot', methods=['POST', 'OPTIONS'])
+def chatbot():
+    if request.method == "OPTIONS":
+        # Preflight request success response
+        return "", 200
+    if not request.is_json:
+        return jsonify({"message": "Request must be JSON"}), 400
+    
+    data = request.get_json()
+    prompt = data.get('prompt')
+    interests = data.get('interests')
+
+    from backend.apps.services.chatbot import chat
+
+    try:
+        response = chat(prompt, interests)
+        return jsonify({"career_suggestion": response}), 200
+    except Exception as e:
+        return jsonify({"message": f"Error generating career suggestion: {e}"}), 500

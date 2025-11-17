@@ -1,47 +1,49 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "../components/ui/dialog";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { Button } from "../components/ui/button";
-import React from "react";
 
-interface SignOutModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSignOut: () => void;
-}
+export default function SignOutPage() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
-export default function SignOutModal({
-  open,
-  onOpenChange,
-  onSignOut,
-}: SignOutModalProps) {
+  useEffect(() => {
+    logout();
+    const timer = setTimeout(() => navigate("/", { replace: true }), 2500);
+    return () => clearTimeout(timer);
+  }, [logout, navigate]);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-3xl border border-gray-200 bg-white shadow-2xl px-10 py-8">
-        <DialogHeader>
-          <DialogTitle className="text-center text-xl font-semibold">
-            Are you sure you want to sign out?
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Confirm if you want to sign out of your account
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex justify-center pt-6">
+    <div className="h-screen text-slate-900 relative overflow-hidden bg-gradient-to-br from-[#e9fbf2] via-[#f0fff5] to-[#f7fff9] flex items-center justify-center px-6">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-16 left-8 w-64 h-64 bg-emerald-200 rounded-full blur-3xl opacity-40 animate-pulse"></div>
+        <div className="absolute -bottom-24 right-16 w-80 h-80 bg-lime-200 rounded-full blur-3xl opacity-35 animate-pulse" style={{ animationDelay: "0.8s" }}></div>
+      </div>
+      <div className="relative z-10 max-w-lg w-full bg-white/95 backdrop-blur-xl border border-emerald-100 rounded-3xl shadow-2xl p-10 text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 border border-emerald-100 rounded-full bg-white/80 text-xs uppercase tracking-[0.35em] text-emerald-500 font-semibold">
+          <span>UH Pathfinder</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+        <h1 className="text-3xl font-bold text-slate-900">You’re signed out</h1>
+        <p className="text-sm text-slate-600">
+          Mahalo for exploring UH Pathfinder. When you’re ready to continue mapping your journey, sign back in and your saved interests will be waiting.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3 pt-4">
           <Button
-            onClick={() => {
-              onSignOut();
-              onOpenChange(false);
-            }}
-            className="bg-indigo-600 hover:bg-indigo-700 min-w-[140px] rounded-full text-base py-2.5 px-8"
+            onClick={() => navigate("/login")}
+            className="rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-emerald-200 shadow-lg hover:shadow-xl"
           >
-            Sign out
+            Sign in again
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate("/")}
+            className="rounded-2xl border border-emerald-100 text-emerald-700 hover:bg-emerald-50"
+          >
+            Return home
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

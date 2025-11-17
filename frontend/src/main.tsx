@@ -9,6 +9,7 @@ import SignupForm from './pages/Signup.tsx'
 import SignIn from './pages/page-signin.tsx'
 import SignUp from './pages/page-signup.tsx'
 import ProfilePage from './pages/page-profile.tsx';
+import SignOutPage from './pages/page-signout.tsx';
 import './styles/input.css';
 import './App.css';
 import React from 'react';
@@ -45,6 +46,7 @@ const AppRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="/logout" element={<SignOutPage />} />
         <Route
           path="/profile"
           element={

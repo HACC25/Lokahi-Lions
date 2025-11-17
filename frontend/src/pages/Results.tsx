@@ -113,10 +113,10 @@ export default function ResultsPathway() {
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const response = await chatbot(inputMessage, selectedInterests);
+    const chatResponse = await chatbot(inputMessage, selectedInterests);
     setChatMessages([...chatMessages, 
       { role: 'user', content: inputMessage },
-      { role: 'assistant', content: response }
+      { role: 'assistant', content: chatResponse }
     ]);
     setInputMessage('');
   };
